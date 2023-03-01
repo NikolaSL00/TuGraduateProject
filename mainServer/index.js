@@ -5,8 +5,6 @@ const https = require("https");
 const bodyParser = require("body-parser");
 const routes = require("./routes.js");
 const cookieParser = require("cookie-parser");
-
-const { dbInit } = require(`./config/Db`);
 const { auth } = require("./middlewares/authMiddleware");
 const { PORT } = require("./config/env");
 
@@ -39,8 +37,6 @@ app.use(routes);
 //app.get("/", (req, res) => res.send("<h1>Hi</h1"));
 // // app.use(errorHandler);
 
-dbInit().then(() =>
-  https.createServer(options, app).listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`);
-  })
-);
+https.createServer(options, app).listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
