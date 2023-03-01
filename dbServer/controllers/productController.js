@@ -3,7 +3,7 @@ const { decrypt } = require("../middlewares/decryptMiddlware");
 const storeService = require("../services/storeService");
 const productService = require("../services/productService");
 
-const { getErrorMessage } = require("../utils/errorHelpers");
+const { getErrorMessage } = require("../../mainServer/utils/errorHelpers");
 
 router.post("/", decrypt, async (req, res) => {});
 

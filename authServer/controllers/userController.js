@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const authService = require("../services/authService");
+const authService = require("../services/userService");
 const { isGuest, isAuth } = require("../middlewares/authMiddleware");
 const { getErrorMessage } = require("../utils/errorHelpers");
 const { TOKEN_NAME } = require("../config/constants");
@@ -18,9 +18,7 @@ router.post("/login", isGuest, async (req, res) => {
 });
 
 router.post("/register", isGuest, async (req, res) => {
-  console.log(req.body);
   const { password, repeatPassword, ...userData } = req.body;
-  console.log("register");
   if (password !== repeatPassword) {
     return res.status(400).send({ error: "Passwords missmatch!" });
   }

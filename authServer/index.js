@@ -26,6 +26,10 @@ const app = express();
 // );
 // app.use("/static", express.static("public"));
 
+app.get("/", (req, res) => {
+  console.log(req.socket.remoteAddress);
+});
+
 app.use(cookieParser());
 app.use(
   bodyParser.urlencoded({
@@ -37,7 +41,7 @@ app.use(bodyParser.json());
 app.use(auth);
 app.use(routes);
 //app.get("/", (req, res) => res.send("<h1>Hi</h1"));
-// // app.use(errorHandler);
+// app.use(errorHandler);
 
 dbInit().then(() =>
   https.createServer(options, app).listen(PORT, () => {
