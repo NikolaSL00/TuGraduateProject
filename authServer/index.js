@@ -1,10 +1,19 @@
+const fs = require("fs");
+
 const express = require("express");
-const { PORT } = require("./config/env");
-const { dbInit } = require(`./config/Db`);
+const https = require("https");
+const bodyParser = require("body-parser");
 const routes = require("./routes.js");
 const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
+
+const { dbInit } = require(`./config/Db`);
 const { auth } = require("./middlewares/authMiddleware");
+const { PORT } = require("./config/env");
+
+const options = {
+  key: fs.readFileSync("./httpsCert/key.pem"),
+  cert: fs.readFileSync("./httpsCert/cert.pem"),
+};
 // const cors = require("cors");
 //const { errorHandler } = require("./middlewares/errorHandlerMiddleware");
 
@@ -27,8 +36,11 @@ app.use(
 app.use(bodyParser.json());
 app.use(auth);
 app.use(routes);
+app.get("/", (req, res) => res.send("<h1>Hi</h1"));
 // // app.use(errorHandler);
 
 dbInit().then(() =>
-  app.listen(PORT, () => console.log(`App is listnening on Port ${PORT}...`))
+  https.createServer(options, app).listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`);
+  })
 );
