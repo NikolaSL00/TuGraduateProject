@@ -17,22 +17,22 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// router.post("/register", async (req, res) => {
-//   console.log(req.body);
-//   const { serverName, password } = req.body;
+router.post("/register", async (req, res) => {
+  console.log(req.body);
+  const { serverName, password } = req.body;
 
-//   try {
-//     const createdUser = await serverService.create({
-//       serverName,
-//       password,
-//     });
-//     // const jwUserToken = await authService.createUserToken(createdUser);
+  try {
+    const createdUser = await serverService.create({
+      serverName,
+      password,
+    });
+    // const jwUserToken = await authService.createUserToken(createdUser);
 
-//     return res.status(201).send();
-//   } catch (error) {
-//     // mongoose error
-//     return res.status(400).send({ error: getErrorMessage(error) });
-//   }
-// });
+    return res.status(201).send();
+  } catch (error) {
+    // mongoose error
+    return res.status(400).send({ error: getErrorMessage(error) });
+  }
+});
 
 module.exports = router;

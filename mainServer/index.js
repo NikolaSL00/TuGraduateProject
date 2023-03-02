@@ -47,11 +47,18 @@ app.use(routes);
   };
 
   axios
-    .post("https://localhost:3000/server/login", options)
+    .post("https://localhost:3000/server/register", options)
     .then((res) => {
       SERVER_CREDENTIALS.TOKEN_VALUE = res.data[TOKEN_NAME];
     })
     .catch((err) => console.log(err));
+
+  // axios
+  //   .post("https://localhost:3000/server/login", options)
+  //   .then((res) => {
+  //     SERVER_CREDENTIALS.TOKEN_VALUE = res.data[TOKEN_NAME];
+  //   })
+  //   .catch((err) => console.log(err));
 })();
 //app.get("/", (req, res) => res.send("<h1>Hi</h1"));
 // // app.use(errorHandler);
