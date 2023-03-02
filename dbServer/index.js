@@ -24,19 +24,13 @@ app.use(
     extended: false,
   })
 );
-// app.use("/static", express.static("public"));
-
-// app.use(cookieParser());
 app.use(
   bodyParser.urlencoded({
     extended: true,
   })
 );
-// // app.use(cors());
 app.use(bodyParser.json());
-// app.use(auth);
 app.use(routes);
-// // // app.use(errorHandler);
 
 (() => {
   const options = {
