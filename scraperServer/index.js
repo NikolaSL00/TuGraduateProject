@@ -6,6 +6,7 @@ const axios = require("axios");
 
 const { PORT } = require("./config/env");
 const { SERVER_CREDENTIALS, TOKEN_NAME } = require("./config/constants");
+const { scheduler } = require("./scheduler/scheduler");
 
 const app = express();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
@@ -30,4 +31,5 @@ const options = {
 };
 https.createServer(options, app).listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
+  scheduler();
 });
