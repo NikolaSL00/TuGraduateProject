@@ -15,8 +15,9 @@ const jobs = [
 ];
 
 function myWorkerMessageHandler(job) {
+  console.log(job);
   if (job.message.error) {
-    console.log("We got error");
+    console.log(`We got error in ${job.name}`);
   } else {
     console.log(
       `Received message from worker for job "${job.name}":`,

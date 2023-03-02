@@ -1,5 +1,6 @@
 const { parentPort } = require("worker_threads");
 const puppeteer = require("puppeteer");
+
 (async () => {
   try {
     const browser = await puppeteer.launch({
@@ -19,7 +20,7 @@ const puppeteer = require("puppeteer");
 
     // Close the browser instance
     await browser.close();
-    throw "error";
+
     parentPort.postMessage({ result: title });
   } catch (err) {
     parentPort.postMessage({ error: err });
