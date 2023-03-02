@@ -3,8 +3,8 @@ const Bree = require("bree");
 const jobs = [
   {
     name: "task1",
-    interval: "5s",
-    timeout: "2s",
+    interval: "10s",
+    timeout: "10s",
     worker: "./tasks/task1.js",
   },
   // {
@@ -15,10 +15,14 @@ const jobs = [
 ];
 
 function myWorkerMessageHandler(job) {
-  console.log(
-    `Received message from worker for job "${job.name}":`,
-    job.message
-  );
+  if (job.message.error) {
+    console.log("We got error");
+  } else {
+    console.log(
+      `Received message from worker for job "${job.name}":`,
+      job.message
+    );
+  }
 }
 
 const bree = new Bree({
