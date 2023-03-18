@@ -5,12 +5,12 @@ const { sendEmail } = require("../services/emailService");
 const scheduler = () => {
   const jobs = [
     {
-      name: "task1",
+      name: "ebag",
       // cron: "0 5,17 * * *", // runs the task twice a day at 5AM and 5 PM
       // timeout: 1200000, // 20 minutes
-      interval: "10s",
-      timeout: "5s",
-      worker: "./tasks/task1.js",
+      interval: "60s",
+      timeout: "6s",
+      worker: "./ebag/ebag.js",
       // interval: "5s",
     },
   ];

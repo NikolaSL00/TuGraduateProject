@@ -7,7 +7,7 @@ const axios = require("axios");
 const { PORT } = require("./config/env");
 const { SERVER_CREDENTIALS, TOKEN_NAME } = require("./config/constants");
 const { scheduler } = require("./scheduler/scheduler");
-
+//const ebag = require("./scheduler/jobs/ebag/ebag");
 const app = express();
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 

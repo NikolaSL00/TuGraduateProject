@@ -46,6 +46,10 @@ app.use(routes);
     .catch((err) => console.log(err));
 })();
 
+app.post("/", (req, res) => {
+  console.log(req.body.data.result);
+});
+
 dbInit().then(() =>
   https.createServer(options, app).listen(PORT, () => {
     console.log(`Server started on port ${PORT}`);

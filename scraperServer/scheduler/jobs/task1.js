@@ -20,7 +20,7 @@ const puppeteer = require("puppeteer");
 
     // Close the browser instance
     await browser.close();
-    throw "err";
+    //throw "err";
     parentPort.postMessage({ result: title });
   } catch (err) {
     parentPort.postMessage({ error: err });
