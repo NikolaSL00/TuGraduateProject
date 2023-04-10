@@ -1,10 +1,10 @@
-const router = require("express").Router();
-const authService = require("../services/userService");
-const { isGuest, isAuth } = require("../middlewares/authMiddleware");
-const { getErrorMessage } = require("../utils/errorHelpers");
-const { TOKEN_NAME } = require("../config/constants");
+const router = require('express').Router();
+const authService = require('../services/userService');
+const { isGuest, isAuth } = require('../middlewares/authMiddleware');
+const { getErrorMessage } = require('../utils/errorHelpers');
+const { TOKEN_NAME } = require('../config/constants');
 
-router.post("/login", isGuest, async (req, res) => {
+router.post('/login', isGuest, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -13,14 +13,14 @@ router.post("/login", isGuest, async (req, res) => {
 
     return res.status(200).json({ [TOKEN_NAME]: jwUserToken });
   } catch (error) {
-    return res.status(400).send({ error: getErrorMessage(error) });
+    return res.status(400).send(getErrorMessage(error));
   }
 });
 
-router.post("/register", isGuest, async (req, res) => {
+router.post('/register', isGuest, async (req, res) => {
   const { password, repeatPassword, ...userData } = req.body;
   if (password !== repeatPassword) {
-    return res.status(400).send({ error: "Passwords missmatch!" });
+    return res.status(400).send({ errors: 'Passwords missmatch!' });
   }
 
   try {
@@ -33,18 +33,14 @@ router.post("/register", isGuest, async (req, res) => {
     return res.status(201).json({ [TOKEN_NAME]: jwUserToken });
   } catch (error) {
     // mongoose error
-    return res.status(400).send({ error: getErrorMessage(error) });
+    return res.status(400).send(getErrorMessage(error));
   }
 });
 
-router.get("/logout", isAuth, (req, res) => {
+router.get('/logout', isAuth, (req, res) => {
   // res.clearCookie(COOKIE_SESSION_NAME);
   // invalidate token
   return res.status(204).send();
-});
-
-router.get("/404", isAuth, (req, res) => {
-  return res.status(404).send({ error: "Page not found" });
 });
 
 module.exports = router;

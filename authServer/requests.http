@@ -1,0 +1,6 @@
+POST https://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+    "email": "niikoola@abv.bg"
+}
