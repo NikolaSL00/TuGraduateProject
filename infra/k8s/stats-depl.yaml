@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stats-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stats
+  template:
+    metadata:
+      labels:
+        app: stats
+    spec:
+      containers:
+        - name: stats
+          image: botbotov/stats
+          env:
+            - name: MONGO_URI
+              value: "mongodb://stats-mongo-srv:27017/stats"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stats-srv
+spec:
+  selector:
+    app: stats
+  ports:
+    - name: stats
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

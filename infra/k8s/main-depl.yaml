@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: main-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: main
+  template:
+    metadata:
+      labels:
+        app: main
+    spec:
+      containers:
+        - name: main
+          image: botbotov/main
+          env:
+            - name: MONGO_URI
+              value: "mongodb://main-mongo-srv:27017/main"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: main-srv
+spec:
+  selector:
+    app: main
+  ports:
+    - name: main
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

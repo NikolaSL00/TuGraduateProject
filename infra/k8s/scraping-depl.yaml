@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraping-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scraping
+  template:
+    metadata:
+      labels:
+        app: scraping
+    spec:
+      containers:
+        - name: scraping
+          image: botbotov/scraping
+          env:
+            - name: MONGO_URI
+              value: "mongodb://scraping-mongo-srv:27017/scraping"
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scraping-srv
+spec:
+  selector:
+    app: scraping
+  ports:
+    - name: scraping
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scraping-mongo-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scraping-mongo
+  template:
+    metadata:
+      labels:
+        app: scraping-mongo
+    spec:
+      containers:
+        - name: scraping-mongo
+          image: mongo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scraping-mongo-srv
+spec:
+  selector:
+    app: scraping-mongo
+  ports:
+    - name: db
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
