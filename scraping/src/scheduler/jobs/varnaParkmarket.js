@@ -3,39 +3,8 @@ const puppeteer = require("puppeteer");
 const { Cluster } = require("puppeteer-cluster");
 const { parentPort } = require("worker_threads");
 const { Buffer } = require("buffer");
-(async () => {
-  let products = [];
-  //   try {
-  const browser = await puppeteer.launch({
-    headless: true,
-    // slowMo: 100,
-    // args: ["--start-maximized"],
-  });
-  const page = await browser.newPage();
 
-  await page.goto("https://varna.parkmart.bg/");
-  const urlsToScrape = [];
-  const categories = await page.$$("div.category-item");
-  for (const cat of categories) {
-    const url = await cat.$("a");
-    const urlValue = await url.evaluate((el) => el.href);
-    urlsToScrape.push(urlValue);
-  }
-
-  for (let i = 0; i < urlsToScrape.length; i++) {
-    await scrape(urlsToScrape[i], page, products);
-  }
-
-  await browser.close();
-
-  //parentPort.postMessage({ result: products });
-  // } catch (err) {
-  //   parentPort.postMessage({ error: err });
-  // }
-  // console.log(`Scraped ${products.length} products`);
-})();
-
-scrape = async (url, page, products) => {
+const scrape = async (url, page, products) => {
   await page.goto(url);
   let nextPageUrl = url;
 
@@ -90,3 +59,35 @@ scrape = async (url, page, products) => {
     }
   }
 };
+
+(async () => {
+  let products = [];
+  //   try {
+  const browser = await puppeteer.launch({
+    headless: true,
+    // slowMo: 100,
+    // args: ["--start-maximized"],
+  });
+  const page = await browser.newPage();
+
+  await page.goto("https://varna.parkmart.bg/");
+  const urlsToScrape = [];
+  const categories = await page.$$("div.category-item");
+  for (const cat of categories) {
+    const url = await cat.$("a");
+    const urlValue = await url.evaluate((el) => el.href);
+    urlsToScrape.push(urlValue);
+  }
+
+  for (let i = 0; i < urlsToScrape.length; i++) {
+    await scrape(urlsToScrape[i], page, products);
+  }
+
+  await browser.close();
+
+  //parentPort.postMessage({ result: products });
+  // } catch (err) {
+  //   parentPort.postMessage({ error: err });
+  // }
+  // console.log(`Scraped ${products.length} products`);
+})();
