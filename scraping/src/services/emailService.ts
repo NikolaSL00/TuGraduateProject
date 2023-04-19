@@ -1,8 +1,8 @@
-const nodemailer = require("nodemailer");
+import nodemailer from 'nodemailer';
 
-const sendEmail = (data) => {
+const sendEmail = (data: any) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.abv.bg",
+    host: 'smtp.abv.bg',
     port: 465,
     auth: {
       //   user: "niikoola@abv.bg",
@@ -11,9 +11,9 @@ const sendEmail = (data) => {
   });
 
   const mailOptions = {
-    from: "niikoola@abv.bg",
-    to: "niikoola@abv.bg",
-    subject: "Pak schupi neshto",
+    from: 'niikoola@abv.bg',
+    to: 'niikoola@abv.bg',
+    subject: 'Pak schupi neshto',
     text: `This is a test email from your Express server! In scraper ${data.name}, this went wrong ${data.error}`,
   };
 
@@ -27,4 +27,4 @@ const sendEmail = (data) => {
   });
 };
 
-exports.sendEmail = sendEmail;
+export { sendEmail };
