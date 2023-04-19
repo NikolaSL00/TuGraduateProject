@@ -1,0 +1,7 @@
+POST https://shopsmart.dev/api/users/signup
+Content-Type: application/json
+
+{
+    "email" : "test@test.com",
+    "password": "password"
+}
