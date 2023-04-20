@@ -16,8 +16,16 @@ spec:
         - name: stats
           image: botbotov/stats
           env:
+            - name: NATS_CLIENT_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NATS_URL
+              value: 'http://nats-srv:4222'
+            - name: NATS_CLUSTER_ID
+              value: shopsmart
             - name: MONGO_URI
-              value: "mongodb://stats-mongo-srv:27017/stats"
+              value: 'mongodb://stats-mongo-srv:27017/stats'
             - name: JWT_KEY
               valueFrom:
                 secretKeyRef:

@@ -93,7 +93,7 @@ const scrape = async (url, page, products) => {
     }
     urlsToScrape.splice(1, 3);
 
-    for (let i = 0; i < urlsToScrape.length; i++) {
+    for (let i = 0; i < 1; i++) {
       await scrape(urlsToScrape[i], page, products);
     }
 

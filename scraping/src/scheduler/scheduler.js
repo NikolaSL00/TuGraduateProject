@@ -26,9 +26,10 @@ export const scheduler = () => {
           error: job.message.error,
         })
       : (() => {
-          new ScrapingStoreCompletedPublisher(natsWrapper.client).publish(
-            job.message.result
-          );
+          new ScrapingStoreCompletedPublisher(natsWrapper.client).publish({
+            name: job.name,
+            products: job.message.result,
+          });
         })();
   }
 
