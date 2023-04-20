@@ -1,4 +1,5 @@
 import { Message } from 'node-nats-streaming';
+import { processData } from '../../services/scrape-store-service';
 import {
   Subjects,
   Listener,
@@ -14,7 +15,8 @@ export class ScrapingStoreCompletedListener extends Listener<ScrapingStoreComple
     console.log('Data received: ', data.name);
     // console.log('Data locations', data.locations);
     // console.log(data.products.length);
-
+    const store = processData(data);
+    console.log(store);
     msg.ack();
   }
 }
