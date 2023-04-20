@@ -93,7 +93,7 @@ const scrape = async (url, page, products) => {
     }
     urlsToScrape.splice(1, 3);
 
-    for (let i = 0; i < urlsToScrape.length; i++) {
+    for (let i = 0; i < 1; i++) {
       await scrape(urlsToScrape[i], page, products);
     }
 
@@ -119,7 +119,20 @@ const scrape = async (url, page, products) => {
 
     // await browser.close();
 
-    parentPort.postMessage({ result: products });
+    parentPort.postMessage({
+      result: products,
+      locations: [
+        {
+          country: 'Bulgaria',
+          city: 'Varna',
+          isPhysical: true,
+          coordinates: {
+            latitude: 12123123.1231,
+            longitude: 123123123.123,
+          },
+        },
+      ],
+    });
   } catch (err) {
     parentPort.postMessage({ error: err });
   }
