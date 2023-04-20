@@ -5,13 +5,13 @@ import { ScrapingDoc } from './scraping';
 interface StoreAttrs {
     name: string,
     locations: LocationDoc[],
-    scrapings: ScrapingDoc[]
+    scrapings?: ScrapingDoc[]
 }
 
 export interface StoreDoc extends mongoose.Document {
     name: string,
     locations: LocationDoc[],
-    scrapings: ScrapingDoc[]
+    scrapings?: ScrapingDoc[]
 }
 
 interface StoreModel extends mongoose.Model<StoreDoc> {
@@ -32,7 +32,7 @@ const storeSchema = new mongoose.Schema(
         scrapings: [{
             type: mongoose.Types.ObjectId,
             ref: 'Scraping',
-            required: true
+            required: false
         }]
     }
 

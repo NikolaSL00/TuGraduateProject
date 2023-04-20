@@ -4,13 +4,13 @@ import { ProductDoc } from './product';
 interface StoreAttrs {
     name: string,
     locations: LocationDoc[],
-    scrapings: ProductDoc[]
+    products?: ProductDoc[]
 }
 
 export interface StoreDoc extends mongoose.Document {
     name: string,
     locations: LocationDoc[],
-    scrapings: ProductDoc[]
+    products?: ProductDoc[]
 }
 
 interface StoreModel extends mongoose.Model<StoreDoc> {
@@ -31,7 +31,7 @@ const storeSchema = new mongoose.Schema(
         products: [{
             type: mongoose.Types.ObjectId,
             ref: 'Products',
-            required: true
+            required: false
         }]
     }
 
