@@ -5,6 +5,17 @@ export interface ScrapingStoreCompletedEvent {
 
   data: {
     name: string;
+    locations: [
+      {
+        country: string;
+        city: string;
+        isPhysical: boolean;
+        coordinates?: {
+          latitude: number;
+          longitude: number;
+        };
+      }
+    ];
     products: [
       {
         title: string;
