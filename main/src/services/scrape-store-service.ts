@@ -2,6 +2,7 @@ import { ScrapingStoreCompletedEvent } from '@shopsmart/common';
 import { Store } from '../models/store';
 import { Product } from '../models/product';
 import { Location } from '../models/location';
+import mongoose from 'mongoose';
 
 export const processData = async (
   data: ScrapingStoreCompletedEvent['data']
@@ -13,17 +14,14 @@ export const processData = async (
     locations: [],
     products: [],
   });
-
-  console.log('store build');
   await store.save();
-  console.log('store saved');
 
   locations.map(async (locationData) => {
     const location = Location.build({ ...locationData });
     await location.save();
-    console.log(`location ${locationData}`);
     store.locations.push(location);
   });
+
   products.map(async (productData) => {
     const product = Product.build({
       ...productData,
