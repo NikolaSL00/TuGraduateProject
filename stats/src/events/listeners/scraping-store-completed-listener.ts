@@ -12,9 +12,9 @@ export class ScrapingStoreCompletedListener extends Listener<ScrapingStoreComple
 
   async onMessage(data: ScrapingStoreCompletedEvent['data'], msg: Message) {
     console.log('Data received: ', data.name);
-    console.log('Data locations', data.locations);
+    // console.log('Data locations', data.locations);
 
-    console.log(data.products.length);
+    // console.log(data.products.length);
 
     msg.ack();
   }
