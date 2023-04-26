@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: auth-mongo-depl
 spec:
+  serviceName: auth-mongo-headless
   replicas: 1
   selector:
     matchLabels:
@@ -15,12 +16,29 @@ spec:
       containers:
         - name: auth-mongo
           image: mongo
+          ports:
+            - name: db
+              containerPort: 27017
+          volumeMounts:
+            - name: auth-mongo-data
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: auth-mongo-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: auth-mongo-srv
 spec:
+  clusterIP: None
   selector:
     app: auth-mongo
   ports:

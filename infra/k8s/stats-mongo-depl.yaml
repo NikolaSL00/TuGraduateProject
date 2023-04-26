@@ -1,8 +1,9 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: stats-mongo-depl
 spec:
+  serviceName: stats-mongo-headless
   replicas: 1
   selector:
     matchLabels:
@@ -15,12 +16,29 @@ spec:
       containers:
         - name: stats-mongo
           image: mongo
+          ports:
+            - name: db
+              containerPort: 27017
+          volumeMounts:
+            - name: stats-mongo-data
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: stats-mongo-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: stats-mongo-srv
 spec:
+  clusterIP: None
   selector:
     app: stats-mongo
   ports:
