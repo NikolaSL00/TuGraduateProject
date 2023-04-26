@@ -6,9 +6,12 @@ import { Location } from '../models/location';
 export const processData = async (
   data: ScrapingStoreCompletedEvent['data']
 ) => {
+
   const { name, locations, products } = data;
 
+
   let store: any = await Store.findOne({ name });
+
 
   if (!store) {
     console.log('creating brand new store');
@@ -19,11 +22,13 @@ export const processData = async (
     });
     await store.save();
   } else {
+    console.log("products BEFORE ", store.products.length)
     // if the store is present empty the products and the locations
     console.log('updating store');
     store.products = [];
     store.locations = [];
     await store.save();
+    console.log("save store after updating")
   }
 
   locations.map(async (locationData) => {
@@ -43,6 +48,7 @@ export const processData = async (
   });
 
   await store.save();
+  console.log("products AFTER ", store.products.length)
   return store;
 };
 

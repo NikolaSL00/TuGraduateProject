@@ -1,9 +1,8 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: main-mongo-depl
 spec:
-  serviceName: main-mongo-headless
   replicas: 1
   selector:
     matchLabels:
@@ -16,29 +15,12 @@ spec:
       containers:
         - name: main-mongo
           image: mongo
-          ports:
-            - name: db
-              containerPort: 27017
-          volumeMounts:
-            - name: main-mongo-data
-              mountPath: /data/db
-  volumeClaimTemplates:
-    - metadata:
-        name: main-mongo-data
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: main-mongo-srv
 spec:
-  clusterIP: None
   selector:
     app: main-mongo
   ports:
