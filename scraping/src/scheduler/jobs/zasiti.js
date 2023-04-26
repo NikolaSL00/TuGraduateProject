@@ -93,7 +93,7 @@ const scrape = async (url, page, products) => {
     }
     urlsToScrape.splice(1, 3);
 
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 2; i++) {
       await scrape(urlsToScrape[i], page, products);
     }
 
@@ -133,8 +133,9 @@ const scrape = async (url, page, products) => {
         },
       ],
     });
+    process.exit(0);
   } catch (err) {
     parentPort.postMessage({ error: err });
+    process.exit(0);
   }
-  console.log(`Scraped ${products.length} products`);
 })();

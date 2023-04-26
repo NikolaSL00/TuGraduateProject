@@ -21,6 +21,7 @@ interface StoreModel extends mongoose.Model<StoreDoc> {
 const storeSchema = new mongoose.Schema({
   name: {
     type: String,
+    unique: true,
     required: true,
   },
   locations: [
