@@ -50,7 +50,8 @@ const productSchema = new mongoose.Schema({
   },
   unit: {
     type: String,
-    required: true,
+    required: false,
+    default: '',
   },
   productUrl: {
     type: String,

@@ -1,30 +1,58 @@
-import {
-    ScrapingStoreCompletedEvent,
-} from '@shopsmart/common';
+import { ScrapingStoreCompletedEvent } from '@shopsmart/common';
 import { Store } from '../models/store';
 import { Product } from '../models/product';
 import { Location } from '../models/location';
+import { Scraping } from '../models/scraping';
 
-export const processData = async (data: ScrapingStoreCompletedEvent['data']) => {
-    const { name, locations, products } = data;
+export const processData = async (
+  data: ScrapingStoreCompletedEvent['data']
+) => {
+  const { name, locations, products } = data;
 
-    const store = Store.build({
-        name,
-        locations: [],
-        products: []
-    })
+  let store: any = await Store.findOne({ name })
+    .populate('scrapings')
+    .populate('locations');
+
+  if (!store) {
+    console.log('creating brand new store');
+    store = Store.build({
+      name,
+      locations: [],
+      scrapings: [],
+    });
     await store.save();
-
-    locations.map(async locationData => {
-        const location = Location.build({ ...locationData });
-        await location.save();
-        store.locations.push(location);
-    })
-    products.map(async productData => {
-        const product = Product.build({ ...productData, price: parseFloat(productData.price), store });
-        await product.save();
-        store.products.push(product);
-    })
-
+  } else {
+    console.log('updating store');
+    store.locations = [];
     await store.save();
-}
+  }
+
+  await Promise.all(
+    locations.map(async (locationData) => {
+      const location = Location.build({ ...locationData });
+      await location.save();
+      store.locations.push(location);
+    })
+  );
+
+  const scraping = Scraping.build({
+    date: new Date(),
+    products: [],
+  });
+
+  await Promise.all(
+    products.map(async (productData) => {
+      const product = Product.build({
+        ...productData,
+        price: parseFloat(productData.price),
+        store,
+      });
+      await product.save();
+      scraping.products.push(product);
+    })
+  );
+
+  store.scrapings.push(scraping);
+  await store.save();
+  return store;
+};

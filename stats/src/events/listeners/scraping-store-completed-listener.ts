@@ -5,6 +5,7 @@ import {
   ScrapingStoreCompletedEvent,
 } from '@shopsmart/common';
 import { queueGroupName } from './queue-group-name';
+import { processData } from '../../services/scrape-store-service';
 
 export class ScrapingStoreCompletedListener extends Listener<ScrapingStoreCompletedEvent> {
   readonly subject = Subjects.ScrapingStoreCompleted;
@@ -12,9 +13,9 @@ export class ScrapingStoreCompletedListener extends Listener<ScrapingStoreComple
 
   async onMessage(data: ScrapingStoreCompletedEvent['data'], msg: Message) {
     console.log('Data received: ', data.name);
-    // console.log('Data locations', data.locations);
 
-    // console.log(data.products.length);
+    const store = await processData(data);
+    console.log(store);
 
     msg.ack();
   }

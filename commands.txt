@@ -1,0 +1,8 @@
+docker ps
+
+docker exec -it k8s_main-mongo_main-mongo-depl-0_default_882cbb50-84a8-4f4f-a744-e097bf28c650_0 mongosh
+
+show dbs
+use db_name
+
+show collections
