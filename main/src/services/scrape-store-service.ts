@@ -6,12 +6,11 @@ import { Location } from '../models/location';
 export const processData = async (
   data: ScrapingStoreCompletedEvent['data']
 ) => {
-
   const { name, locations, products } = data;
 
-
-  let store: any = await Store.findOne({ name });
-
+  let store: any = await Store.findOne({ name })
+    .populate('products')
+    .populate('locations');
 
   if (!store) {
     console.log('creating brand new store');
@@ -22,33 +21,34 @@ export const processData = async (
     });
     await store.save();
   } else {
-    console.log("products BEFORE ", store.products.length)
     // if the store is present empty the products and the locations
     console.log('updating store');
     store.products = [];
     store.locations = [];
     await store.save();
-    console.log("save store after updating")
   }
 
-  locations.map(async (locationData) => {
-    const location = Location.build({ ...locationData });
-    await location.save();
-    store.locations.push(location);
-  });
+  await Promise.all(
+    locations.map(async (locationData) => {
+      const location = Location.build({ ...locationData });
+      await location.save();
+      store.locations.push(location);
+    })
+  );
 
-  products.map(async (productData) => {
-    const product = Product.build({
-      ...productData,
-      price: parseFloat(productData.price),
-      store,
-    });
-    await product.save();
-    store.products.push(product);
-  });
+  await Promise.all(
+    products.map(async (productData) => {
+      const product = Product.build({
+        ...productData,
+        price: parseFloat(productData.price),
+        store,
+      });
+      await product.save();
+      store.products.push(product);
+    })
+  );
 
   await store.save();
-  console.log("products AFTER ", store.products.length)
   return store;
 };
 

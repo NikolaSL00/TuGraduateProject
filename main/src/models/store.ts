@@ -34,7 +34,7 @@ const storeSchema = new mongoose.Schema({
   products: [
     {
       type: mongoose.Types.ObjectId,
-      ref: 'Products',
+      ref: 'Product',
       required: true,
     },
   ],
