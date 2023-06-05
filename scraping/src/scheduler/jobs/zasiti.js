@@ -1,9 +1,9 @@
 const puppeteer = require("puppeteer");
+const fs = require('fs');
 
-const { Cluster } = require("puppeteer-cluster");
 const { parentPort } = require("worker_threads");
 
-const scrape = async (url, page, products) => {
+const scrape = async (url, page, products, imageUrls) => {
   await page.goto(url);
   let nextPageUrl = url;
   const pattern = /^([\p{L}\s]+) (\d+([,.]\d+)?[А-Яа-я]+)/u;
@@ -13,11 +13,10 @@ const scrape = async (url, page, products) => {
 
     for (const element of elements) {
       const title = await element.$("h2.wc-loop-product-title");
-      let titleValue = await title.evaluate((el) => el.textContent);
+      const titleValue = await title.evaluate((el) => el.textContent);
       const match = titleValue.match(pattern);
       let unitValue = "";
       if (match) {
-        titleValue = match[1];
         unitValue = match[2];
       }
 
@@ -52,19 +51,13 @@ const scrape = async (url, page, products) => {
         unit: unitValue,
         productUrl: productUrl,
       });
-      //   console.log({
-      //     title: titleValue,
-      //     description: descriptionValue,
-      //     imageUrl: imageUrl,
-      //     price: priceValue,
-      //     unit: unitValue,
-      //     productUrl: productUrl,
-      //   });
+
+      imageUrls.push({imageUrl: imageUrl, label: titleValue});
+      console.log(imageUrls[imageUrls.length - 1]);
     }
     const nextPage = await page.$("a.next.page-numbers");
     if (nextPage) {
       nextPageUrl = await nextPage.evaluate((el) => el.href);
-      //nextPageUrl = await page.$eval("a.next.page-numbers", (a) => a.href);
       await page.goto(nextPageUrl);
     } else {
       nextPageUrl = "";
@@ -74,69 +67,38 @@ const scrape = async (url, page, products) => {
 
 (async () => {
   let products = [];
+  const imageUrls = [];
   try {
     const browser = await puppeteer.launch({
-      headless: true, // Run the browser with a visible UI
-      // slowMo: 100, // Slow down Puppeteer operations by 100ms
-      // args: ["--start-maximized"], // Start the browser maximized
+      headless: 'new', // Run the browser with a visible UI
     });
+
     const page = await browser.newPage();
-    await page.goto(
-      "https://zasiti.bg/category/%d0%b0%d0%bb%d0%ba%d0%be%d1%85%d0%be%d0%bb%d0%bd%d0%b8-%d0%bd%d0%b0%d0%bf%d0%b8%d1%82%d0%ba%d0%b8/"
-    );
-    const urlsToScrape = [];
-    const categories = await page.$$("div.cat_data");
-    for (const cat of categories) {
-      const url = await cat.$("a");
-      const urlValue = await url.evaluate((el) => el.href);
-      urlsToScrape.push(urlValue);
-    }
-    urlsToScrape.splice(1, 3);
+    const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product'
 
-    for (let i = 0; i < 1; i++) {
-      await scrape(urlsToScrape[i], page, products);
-      console.log(urlsToScrape[i]);
-    }
+    await scrape(url, page, products, imageUrls);
 
-    //   const url =
-    //     "https://zasiti.bg/category/%d0%b0%d0%bb%d0%ba%d0%be%d1%85%d0%be%d0%bb%d0%bd%d0%b8-%d0%bd%d0%b0%d0%bf%d0%b8%d1%82%d0%ba%d0%b8/";
+    console.log(imageUrls.length);
+    fs.writeFile('../data/zasitiData.json', JSON.stringify(imageUrls), (err) => {
+            if(err){
+                console.log(err);
+            }
+        });
 
-    // await scrape(url, page, products);
-    // const cluster = await Cluster.launch({
-    //   concurrency: Cluster.CONCURRENCY_CONTEXT,
-    //   maxConcurrency: 5,
+    // parentPort.postMessage({
+    //   result: products,
+    //   locations: [
+    //     {
+    //       country: "Bulgaria",
+    //       city: "Varna",
+    //       isPhysical: false,
+    //     },
+    //   ],
     // });
-
-    // await cluster.task(async ({ page, data: url }) => {
-    //   products = await scrape(url, page, products);
-    // });
-
-    // for (const url of urlsToScrape) {
-    //   cluster.queue(url);
-    // }
-
-    // await cluster.idle();
-    // await cluster.close();
-
-    // await browser.close();
-
-    parentPort.postMessage({
-      result: products,
-      locations: [
-        {
-          country: "Bulgaria",
-          city: "Varna",
-          isPhysical: true,
-          coordinates: {
-            latitude: 12123123.1231,
-            longitude: 123123123.123,
-          },
-        },
-      ],
-    });
-    process.exit(0);
+    // process.exit(0);
   } catch (err) {
-    parentPort.postMessage({ error: err });
-    process.exit(0);
+    console.log(err);
+    // parentPort.postMessage({ error: err });
+    // process.exit(0);
   }
 })();

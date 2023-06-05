@@ -1,10 +1,7 @@
 const puppeteer = require("puppeteer");
+const fs = require('fs');
 
-const { Cluster } = require("puppeteer-cluster");
-const { parentPort } = require("worker_threads");
-const { Buffer } = require("buffer");
-
-const scrape = async (url, page, products) => {
+const scrape = async (url, page, products, imageUrls) => {
   await page.goto(url);
   let nextPageUrl = url;
 
@@ -25,7 +22,7 @@ const scrape = async (url, page, products) => {
       const unitValue = priceValue.slice(9, 15);
       priceValue = priceValue.slice(0, 9);
 
-      const img = await element.$("img.attachment-thumb");
+      const img = await element.$("img");
 
       const imageUrl = await img.evaluate((el) =>
         el.getAttribute("data-lazy-src")
@@ -39,14 +36,9 @@ const scrape = async (url, page, products) => {
         unit: unitValue,
         productUrl: productUrl,
       });
-      console.log({
-        title: titleValue,
-        description: descriptionValue,
-        imageUrl: imageUrl,
-        price: priceValue,
-        unit: unitValue,
-        productUrl: productUrl,
-      });
+
+      imageUrls.push({imageUrl, label:titleValue});
+      console.log(imageUrls[imageUrls.length - 1]);
     }
 
     const nextPage = await page.$("a.next.page-numbers");
@@ -61,18 +53,18 @@ const scrape = async (url, page, products) => {
 };
 
 (async () => {
-  let products = [];
-  //   try {
+  const products = [];
+  const imageUrls = [];
+    try {
   const browser = await puppeteer.launch({
-    headless: true,
-    // slowMo: 100,
-    // args: ["--start-maximized"],
+    headless: 'new',
   });
   const page = await browser.newPage();
 
   await page.goto("https://varna.parkmart.bg/");
   const urlsToScrape = [];
   const categories = await page.$$("div.category-item");
+
   for (const cat of categories) {
     const url = await cat.$("a");
     const urlValue = await url.evaluate((el) => el.href);
@@ -80,14 +72,36 @@ const scrape = async (url, page, products) => {
   }
 
   for (let i = 0; i < urlsToScrape.length; i++) {
-    await scrape(urlsToScrape[i], page, products);
+    await scrape(urlsToScrape[i], page, products, imageUrls);
   }
+  
 
-  await browser.close();
-
-  //parentPort.postMessage({ result: products });
-  // } catch (err) {
-  //   parentPort.postMessage({ error: err });
-  // }
-  // console.log(`Scraped ${products.length} products`);
+  parentPort.postMessage({
+      result: products,
+      locations: [
+        {
+          country: "Bulgaria",
+          city: "Varna",
+          isPhysical: true,
+          coordinates: [
+            {
+              latitude: 43.20965466626836,
+              longitude: 27.92086208060846
+            },
+            {
+              latitude: 43.22231778771453, 
+              longitude: 27.95463668747816
+            }
+          ]
+        },
+      ],
+    });
+  }
+  catch(err) {
+      parentPort.postMessage({ error: err });
+  }
+  finally {
+      await browser.close();
+      process.exit(0);
+  }
 })();
