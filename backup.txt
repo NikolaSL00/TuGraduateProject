@@ -28,3 +28,65 @@ spec:
       protocol: TCP
       port: 27017
       targetPort: 27017
+
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  tls:
+    - hosts:
+        - shopsmart.dev
+      secretName: ingress-tls-secret
+  rules:
+    - host: shopsmart.dev
+      http:
+        paths:
+          - path: /api/users/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: auth-srv
+                port:
+                  number: 3000
+
+          # - path: /?(.*)
+          #   pathType: Prefix
+          #   backend:
+          #     service:
+          #       name: client-srv
+          #       port:
+          #         number: 3000
+
+ngrok token: 2QauRUcW8D6oKfYJ3OUhequ3qSM_3UX9CHikxcgMjTTLFMrRn
+ngrok http --host-header=rewrite shopsmart.dev:443 //da se exposne s ngrok i da moje da se prashtat zaqvki ot telefona
+
+   try {
+      const options = {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        agent:
+          NativeModules.Networking && NativeModules.Networking.HTTPSv3Socket,
+        body: JSON.stringify({
+          email: "test231@test.com",
+          password: "password",
+        }),
+      };
+      const url = "https://shopsmart.dev/api/users/signin";
+
+      const response = await fetch(url, options);
+      const data = await response.json();
+      console.log(data);
+
+      //const response = await api.post("api/users/signin", { email, password });
+      await AsyncStorage.setItem("token", data.token);
+      dispatch({ type: "signin", payload: data.token });
+      navigate("MainFlow", { screen: "Search" });
+   }

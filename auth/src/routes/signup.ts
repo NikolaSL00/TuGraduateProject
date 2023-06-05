@@ -10,11 +10,11 @@ const router = express.Router();
 router.post(
   '/api/users/signup',
   [
-    body('email').isEmail().withMessage('Email must be valid'),
+    body('email').isEmail().withMessage('Имейлът трябва да е валиден'),
     body('password')
       .trim()
       .isLength({ min: 4, max: 20 })
-      .withMessage('Password must be between 4 and 20 characters'),
+      .withMessage('Паролата трябва да е между 4 и 20 символа'),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -23,10 +23,11 @@ router.post(
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      throw new BadRequestError('Email in use');
+      throw new BadRequestError('Вече съществува потребител с такъв имейл');
     }
 
     const user = User.build({ email, password });
+
     await user.save();
 
     // Generate JWT
@@ -43,7 +44,7 @@ router.post(
       jwt: userJwt,
     };
 
-    res.status(201).send(user);
+    res.status(200).send({ token: userJwt, userEmail: user.email, userLocationCity: user.locationCity });
   }
 );
 

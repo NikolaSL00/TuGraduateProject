@@ -1,0 +1,2 @@
+Да се сложи token-а в cookie
+Да се използва lets encrypt за ingress

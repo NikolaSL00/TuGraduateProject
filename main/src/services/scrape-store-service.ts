@@ -13,7 +13,7 @@ export const processData = async (
     .populate('locations');
 
   if (!store) {
-    // console.log('creating brand new store');
+    console.log('creating brand new store');
     store = Store.build({
       name,
       locations: [],
@@ -22,7 +22,7 @@ export const processData = async (
     await store.save();
   } else {
     // if the store is present empty the products and the locations
-    // console.log('updating store');
+    console.log('updating store');
     store.products = [];
     store.locations = [];
     await store.save();

@@ -11,11 +11,11 @@ const router = express.Router();
 router.post(
   '/api/users/signin',
   [
-    body('email').isEmail().withMessage('Email must be valid'),
+    body('email').isEmail().withMessage('Имейлът трябва да е валиден'),
     body('password')
       .trim()
       .notEmpty()
-      .withMessage('You must supply a password'),
+      .withMessage('Трябва да въведете парола'),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -23,7 +23,7 @@ router.post(
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
-      throw new BadRequestError('Invalid credentials');
+      throw new BadRequestError('Невалиден имейл');
     }
 
     const passwordsMatch = await Password.compare(
@@ -31,7 +31,7 @@ router.post(
       password
     );
     if (!passwordsMatch) {
-      throw new BadRequestError('Invalid Credentials');
+      throw new BadRequestError('Невалидна парола');
     }
 
     // Generate JWT
@@ -48,7 +48,8 @@ router.post(
       jwt: userJwt,
     };
 
-    res.status(200).send(existingUser);
+    const reqSess = req.session;
+    res.status(200).send({ token: userJwt, userEmail: existingUser.email, userLocationCity: existingUser.locationCity });
   }
 );
 

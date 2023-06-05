@@ -15,7 +15,7 @@ export class ScrapingStoreCompletedListener extends Listener<ScrapingStoreComple
     console.log('Data received: ', data.name);
 
     const store = await processData(data);
-    // console.log(store);
+    console.log(store);
     // console.log('products-length: ', store.products.length);
 
     msg.ack();

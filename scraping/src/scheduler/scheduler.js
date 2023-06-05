@@ -1,10 +1,10 @@
-const Bree = require('bree');
-const path = require('path');
-const { sendEmail } = require('../services/emailService');
-const { natsWrapper } = require('../nats-wrapper');
+const Bree = require("bree");
+const path = require("path");
+const { sendEmail } = require("../services/emailService");
+const { natsWrapper } = require("../nats-wrapper");
 const {
   ScrapingStoreCompletedPublisher,
-} = require('../events/publishers/scraping-store-completed-publisher');
+} = require("../events/publishers/scraping-store-completed-publisher");
 
 export const scheduler = () => {
   const jobs = [
@@ -22,11 +22,11 @@ export const scheduler = () => {
       //     isPhysical: false,
       //   },
       // ],
-      name: 'zasiti',
+      name: "zasiti",
       // cron: '0 5,17 * * *', // runs the task twice a day at 5AM and 5 PM
       // timeout: 1200000, // 20 minutes
-      interval: '60s',
-      timeout: '6s',
+      interval: "60s",
+      timeout: "240s",
       worker: `zasiti.js`,
       // interval: "5s",
     },

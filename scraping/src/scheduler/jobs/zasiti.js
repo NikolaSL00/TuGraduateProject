@@ -95,6 +95,7 @@ const scrape = async (url, page, products) => {
 
     for (let i = 0; i < 1; i++) {
       await scrape(urlsToScrape[i], page, products);
+      console.log(urlsToScrape[i]);
     }
 
     //   const url =
