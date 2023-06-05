@@ -88,6 +88,9 @@ const scrape = async (url, page, products) => {
     process.exit(0);
   } catch (err) {
     parentPort.postMessage({ error: err });
-    process.exit(0);
   }
+  finally {
+    await browser.close();
+    process.exit(0);
+}
 })();
