@@ -2,9 +2,10 @@ const puppeteer = require("puppeteer");
 const fs = require('fs');
 const { parentPort } = require("worker_threads");
 
-const scrape = async (url, page, products, imageUrls) => {
+const scrape = async (url, page, products) => {
   await page.goto(url);
   let nextPageUrl = url;
+  
   while (nextPageUrl) {
     const elements = await page.$$("div.item.product-card");
 
@@ -48,9 +49,7 @@ const scrape = async (url, page, products, imageUrls) => {
           unit: unitValue,
           productUrl: productUrl,
         });
-        
-        imageUrls.push({imageUrl, label: titleValue});
-        console.log(imageUrls[imageUrls.length - 1]);
+
       }
 
     
@@ -70,7 +69,6 @@ const scrape = async (url, page, products, imageUrls) => {
 
 (async () => {
   const products = [];
-  const imageUrls = [];
   try {
   
     const browser = await puppeteer.launch({
@@ -79,17 +77,7 @@ const scrape = async (url, page, products, imageUrls) => {
 
     const page = await browser.newPage();
     const urlToScrape = "https://gastronom.bg/products?query=&order-by=date&sorted-by=desc&limit=100";
-    await scrape(urlToScrape, page, products, imageUrls);
-
-
-    console.log(imageUrls.length);
-    fs.writeFile('../data/gastronomData.json', JSON.stringify(imageUrls), (err) => {
-      if(err){
-          console.log(err);
-      }
-    });
-
-    await browser.close();
+    await scrape(urlToScrape, page, products);
 
     parentPort.postMessage({
       result: products,

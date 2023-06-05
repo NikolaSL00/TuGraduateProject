@@ -714,7 +714,7 @@ const urlsToScrape = [
   'https://www.ebag.bg/categories/kozmetika/1232',
 ];
 
-const scrape = async (url, page, products, imageUrls) => {
+const scrape = async (url, page, products) => {
   await page.goto(url);
 
   await page.evaluate(async () => {
@@ -769,8 +769,6 @@ const scrape = async (url, page, products, imageUrls) => {
       unit: unitValue,
       productUrl
     });
-    imageUrls.push({imageUrl, label: titleValue});
-    console.log(imageUrls[imageUrls.length - 1]);
   }
 };
 
@@ -783,10 +781,8 @@ const scrape = async (url, page, products, imageUrls) => {
     const page = await browser.newPage();
 
     const products = [];
-    const imageUrls = [];
-
     for (const url of urlsToScrape) {
-      await scrape(url, page, products, imageUrls);
+      await scrape(url, page, products);
     }
 
     parentPort.postMessage({

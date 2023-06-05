@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const fs = require('fs');
 
-const scrape = async (url, page, products, imageUrls) => {
+const scrape = async (url, page, products) => {
   await page.goto(url);
   let nextPageUrl = url;
 
@@ -36,9 +36,6 @@ const scrape = async (url, page, products, imageUrls) => {
         unit: unitValue,
         productUrl: productUrl,
       });
-
-      imageUrls.push({imageUrl, label:titleValue});
-      console.log(imageUrls[imageUrls.length - 1]);
     }
 
     const nextPage = await page.$("a.next.page-numbers");
@@ -54,7 +51,6 @@ const scrape = async (url, page, products, imageUrls) => {
 
 (async () => {
   const products = [];
-  const imageUrls = [];
     try {
   const browser = await puppeteer.launch({
     headless: 'new',
@@ -72,16 +68,8 @@ const scrape = async (url, page, products, imageUrls) => {
   }
 
   for (let i = 0; i < urlsToScrape.length; i++) {
-    await scrape(urlsToScrape[i], page, products, imageUrls);
+    await scrape(urlsToScrape[i], page, products);
   }
-
-  console.log(imageUrls.length);
-  fs.writeFile('../data/parkmartSofiaData.json', JSON.stringify(imageUrls), (err) => {
-        if(err){
-            console.log(err);
-        }
-    });
-    
 
   parentPort.postMessage({
       result: products,

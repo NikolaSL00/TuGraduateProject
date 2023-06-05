@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const { parentPort } = require("worker_threads");
 
-const scrape = async (url, page, products, imageUrls) => {
+const scrape = async (url, page, products) => {
   await page.goto(url);
   let nextPageUrl = url;
   const pattern = /^([\p{L}\s]+) (\d+([,.]\d+)?[А-Яа-я]+)/u;
@@ -52,8 +52,6 @@ const scrape = async (url, page, products, imageUrls) => {
         productUrl: productUrl,
       });
 
-      imageUrls.push({imageUrl: imageUrl, label: titleValue});
-      console.log(imageUrls[imageUrls.length - 1]);
     }
     const nextPage = await page.$("a.next.page-numbers");
     if (nextPage) {
@@ -67,7 +65,6 @@ const scrape = async (url, page, products, imageUrls) => {
 
 (async () => {
   let products = [];
-  const imageUrls = [];
   try {
     const browser = await puppeteer.launch({
       headless: 'new', // Run the browser with a visible UI
@@ -76,14 +73,7 @@ const scrape = async (url, page, products, imageUrls) => {
     const page = await browser.newPage();
     const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product'
 
-    await scrape(url, page, products, imageUrls);
-
-    console.log(imageUrls.length);
-    fs.writeFile('../data/zasitiData.json', JSON.stringify(imageUrls), (err) => {
-            if(err){
-                console.log(err);
-            }
-        });
+    await scrape(url, page, products);
 
     parentPort.postMessage({
       result: products,

@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
 const fs = require('fs');
 
-const scrape = async (url, page, products, imageUrls) => {
+const scrape = async (url, page, products) => {
   await page.goto(url);
   let nextPageUrl = url;
 
@@ -37,8 +37,6 @@ const scrape = async (url, page, products, imageUrls) => {
         productUrl: productUrl,
       });
 
-      imageUrls.push({imageUrl, label:titleValue});
-      console.log(imageUrls[imageUrls.length - 1]);
     }
 
     const nextPage = await page.$("a.next.page-numbers");
@@ -54,52 +52,42 @@ const scrape = async (url, page, products, imageUrls) => {
 
 (async () => {
   const products = [];
-  const imageUrls = [];
-    try {
-  const browser = await puppeteer.launch({
-    headless: 'new',
-  });
-  const page = await browser.newPage();
-
-  await page.goto("https://burgas.parkmart.bg/");
-  const urlsToScrape = [];
-  const categories = await page.$$("div.category-item");
-
-  for (const cat of categories) {
-    const url = await cat.$("a");
-    const urlValue = await url.evaluate((el) => el.href);
-    urlsToScrape.push(urlValue);
-  }
-
-  for (let i = 0; i < urlsToScrape.length; i++) {
-    await scrape(urlsToScrape[i], page, products, imageUrls);
-  }
-
-
-  console.log(imageUrls.length);
-  fs.writeFile('../data/parkmartBurgasData.json', JSON.stringify(imageUrls), (err) => {
-        if(err){
-            console.log(err);
-        }
+  try {
+    const browser = await puppeteer.launch({
+      headless: 'new',
     });
-  
+    const page = await browser.newPage();
 
-  parentPort.postMessage({
-      result: products,
-      locations: [
-        {
-          country: "Bulgaria",
-          city: "Burgas",
-          isPhysical: true,
-          coordinates: [
-            {
-              latitude: 42.50078262172047, 
-              longitude: 27.480267182412366
-            }
-          ]
-        },
-      ],
-    });
+    await page.goto("https://burgas.parkmart.bg/");
+    const urlsToScrape = [];
+    const categories = await page.$$("div.category-item");
+
+    for (const cat of categories) {
+      const url = await cat.$("a");
+      const urlValue = await url.evaluate((el) => el.href);
+      urlsToScrape.push(urlValue);
+    }
+
+    for (let i = 0; i < urlsToScrape.length; i++) {
+      await scrape(urlsToScrape[i], page, products);
+    }
+
+    parentPort.postMessage({
+        result: products,
+        locations: [
+          {
+            country: "Bulgaria",
+            city: "Burgas",
+            isPhysical: true,
+            coordinates: [
+              {
+                latitude: 42.50078262172047, 
+                longitude: 27.480267182412366
+              }
+            ]
+          },
+        ],
+      });
   }
   catch(err) {
       parentPort.postMessage({ error: err });
