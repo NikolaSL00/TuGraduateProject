@@ -85,20 +85,19 @@ const scrape = async (url, page, products, imageUrls) => {
             }
         });
 
-    // parentPort.postMessage({
-    //   result: products,
-    //   locations: [
-    //     {
-    //       country: "Bulgaria",
-    //       city: "Varna",
-    //       isPhysical: false,
-    //     },
-    //   ],
-    // });
-    // process.exit(0);
+    parentPort.postMessage({
+      result: products,
+      locations: [
+        {
+          country: "Bulgaria",
+          city: "Varna",
+          isPhysical: false,
+        },
+      ],
+    });
+    process.exit(0);
   } catch (err) {
-    console.log(err);
-    // parentPort.postMessage({ error: err });
-    // process.exit(0);
+    parentPort.postMessage({ error: err });
+    process.exit(0);
   }
 })();

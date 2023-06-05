@@ -91,27 +91,27 @@ const scrape = async (url, page, products, imageUrls) => {
 
     await browser.close();
 
-    // parentPort.postMessage({
-    //   result: products,
-    //   locations: [
-    //     {
-    //       country: "Bulgaria",
-    //       city: "Plovdiv",
-    //       isPhysical: false,
-    //     },
-    //     {
-    //       country: "Bulgaria",
-    //       city:"Sofia",
-    //       isPhysical: false,
-    //     },
-    //   ],
-    // });
+    parentPort.postMessage({
+      result: products,
+      locations: [
+        {
+          country: "Bulgaria",
+          city: "Plovdiv",
+          isPhysical: false,
+        },
+        {
+          country: "Bulgaria",
+          city:"Sofia",
+          isPhysical: false,
+        },
+      ],
+    });
   }
   catch(err) {
       parentPort.postMessage({ error: err });
   }
   finally {
-      // await browser.close();
-      // process.exit(0);
+      await browser.close();
+      process.exit(0);
   }
 })();

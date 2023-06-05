@@ -83,28 +83,28 @@ const scrape = async (url, page, products, imageUrls) => {
     });
     
 
-//   parentPort.postMessage({
-//       result: products,
-//       locations: [
-//         {
-//           country: "Bulgaria",
-//           city: "Sofia",
-//           isPhysical: true,
-//           coordinates: [
-//             {
-//               latitude: 42.870305172003654, 
-//               longitude: 23.317033101582226,
-//             }
-//           ]
-//         },
-//       ],
-//     });
+  parentPort.postMessage({
+      result: products,
+      locations: [
+        {
+          country: "Bulgaria",
+          city: "Sofia",
+          isPhysical: true,
+          coordinates: [
+            {
+              latitude: 42.870305172003654, 
+              longitude: 23.317033101582226,
+            }
+          ]
+        },
+      ],
+    });
   }
   catch(err) {
       parentPort.postMessage({ error: err });
   }
   finally {
-    //   await browser.close();
-    //   process.exit(0);
+      await browser.close();
+      process.exit(0);
   }
 })();
