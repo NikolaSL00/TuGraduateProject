@@ -10,10 +10,10 @@ export interface ScrapingStoreCompletedEvent {
         country: string;
         city: string;
         isPhysical: boolean;
-        coordinates?: {
+        coordinates?: [{
           latitude: number;
           longitude: number;
-        };
+        }];
       }
     ];
     products: [
