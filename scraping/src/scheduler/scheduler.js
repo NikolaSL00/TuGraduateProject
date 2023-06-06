@@ -22,12 +22,12 @@ export const scheduler = () => {
       //     isPhysical: false,
       //   },
       // ],
-      name: "test",
+      name: "bulmagShumen",
       // cron: '0 5,17 * * *', // runs the task twice a day at 5AM and 5 PM
       // timeout: 1200000, // 20 minutes
       interval: "60s",
       timeout: "25s",
-      worker: `test.js`,
+      worker: `bulmagShumen.js`,
       // interval: "5s",
     },
   ];

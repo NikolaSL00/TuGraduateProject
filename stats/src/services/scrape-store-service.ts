@@ -23,7 +23,12 @@ export const processData = async (
     await store.save();
   } else {
     console.log('updating store');
+    
+    for(let location of store.locations) {
+      await Location.deleteOne({_id: location._id});
+    }
     store.locations = [];
+
     await store.save();
   }
 

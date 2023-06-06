@@ -69,12 +69,12 @@ const scrape = async (url, page, products) => {
 
 (async () => {
   const products = [];
-  try {
-  
-    const browser = await puppeteer.launch({
-      headless: 'new', // Run the browser with a visible UI
-    });
 
+  const browser = await puppeteer.launch({
+    headless: 'new', // Run the browser with a visible UI
+  });
+
+  try {
     const page = await browser.newPage();
     const urlToScrape = "https://gastronom.bg/products?query=&order-by=date&sorted-by=desc&limit=100";
     await scrape(urlToScrape, page, products);

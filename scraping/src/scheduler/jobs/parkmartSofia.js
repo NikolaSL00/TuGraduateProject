@@ -51,10 +51,12 @@ const scrape = async (url, page, products) => {
 
 (async () => {
   const products = [];
-    try {
+
   const browser = await puppeteer.launch({
     headless: 'new',
   });
+
+  try {
   const page = await browser.newPage();
 
   await page.goto("https://sofia.parkmart.bg/");

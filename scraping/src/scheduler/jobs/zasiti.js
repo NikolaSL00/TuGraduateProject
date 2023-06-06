@@ -67,14 +67,15 @@ const scrape = async (url, page, products) => {
 
 (async () => {
   let products = [];
-  try {
-    const browser = await puppeteer.launch({
-      headless: 'new', // Run the browser with a visible UI
-    });
 
+  const browser = await puppeteer.launch({
+    headless: 'new', // Run the browser with a visible UI
+  });
+  
+  try {
     const page = await browser.newPage();
-    // const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product';
-    const url = 'https://zasiti.bg/?s=%D0%BA%D0%B0%D0%B9%D0%BC%D0%B0&action=wowmall_ajax_search&post_type=product';
+    const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product';
+    // const url = 'https://zasiti.bg/?s=%D0%BA%D0%B0%D0%B9%D0%BC%D0%B0&action=wowmall_ajax_search&post_type=product';
 
     await scrape(url, page, products);
 

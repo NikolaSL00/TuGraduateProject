@@ -1,13 +1,12 @@
 const puppeteer = require('puppeteer');
 
 (async () => {
+    const browser = await puppeteer.launch({
+        headless: 'new',
+        protocolTimeout: 3_000_000, // 50 min
+    });
 
     try {
-        const browser = await puppeteer.launch({
-            headless: 'new',
-            protocolTimeout: 3_000_000, // 50 min
-        });
-
         const page = await browser.newPage();
 
         await page.goto(
@@ -41,7 +40,7 @@ const puppeteer = require('puppeteer');
               scrollHeight = document.documentElement.scrollHeight;
               window.scrollBy(0, scrollHeight);
         
-              await new Promise((resolve) => setTimeout(resolve, 2750));
+              await new Promise((resolve) => setTimeout(resolve, 3000));
             }
           });
 

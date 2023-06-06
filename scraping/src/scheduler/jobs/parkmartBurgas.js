@@ -52,10 +52,12 @@ const scrape = async (url, page, products) => {
 
 (async () => {
   const products = [];
+
+  const browser = await puppeteer.launch({
+    headless: 'new',
+  });
+  
   try {
-    const browser = await puppeteer.launch({
-      headless: 'new',
-    });
     const page = await browser.newPage();
 
     await page.goto("https://burgas.parkmart.bg/");

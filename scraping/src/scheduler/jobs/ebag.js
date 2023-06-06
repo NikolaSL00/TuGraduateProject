@@ -775,14 +775,17 @@ const scrape = async (url, page, products) => {
 };
 
 (async () => {
+  
+  const products = [];
+
+  const browser = await puppeteer.launch({
+    headless: 'new', // Run the browser with a visible UI
+    protocolTimeout: 4_000_000, // > 1 hr
+  });
+
   try {
-    const browser = await puppeteer.launch({
-      headless: 'new', // Run the browser with a visible UI
-      protocolTimeout: 4_000_000, // > 1 hr
-    });
     const page = await browser.newPage();
  
-    const products = [];
     for (const url of urlsToScrape) {
       console.log(urlsToScrape);
       await scrape(url, page, products);
