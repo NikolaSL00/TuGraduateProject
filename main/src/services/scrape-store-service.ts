@@ -25,12 +25,13 @@ export const processData = async (
     console.log('updating store');
 
     for(let product of store.products){
-      await Product.deleteOne({id: product.id});
+      console.log(product);
+      await Product.deleteOne({_id: product._id});
     }
     store.products = [];
 
-    for(let location of store.location) {
-      await Location.deleteOne({id: location.id});
+    for(let location of store.locations) {
+      await Location.deleteOne({_id: location._id});
     }
     store.locations = [];
 

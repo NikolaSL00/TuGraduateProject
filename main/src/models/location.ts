@@ -4,20 +4,20 @@ interface LocationAttrs {
   country: string;
   city: string;
   isPhysical: boolean;
-  coordinates?: {
+  coordinates?: [{
     latitude: number;
     longitude: number;
-  };
+  }];
 }
 
 export interface LocationDoc extends mongoose.Document {
   country: string;
   city: string;
   isPhysical: boolean;
-  coordinates?: {
+  coordinates?: [{
     latitude: number;
     longitude: number;
-  };
+  }];
 }
 
 interface LocationModel extends mongoose.Model<LocationDoc> {
@@ -38,7 +38,7 @@ const locationSchema = new mongoose.Schema({
     required: true,
   },
   coordinates: {
-    type: {
+    type: [{
       latitude: {
         type: Number,
         required: true,
@@ -47,7 +47,7 @@ const locationSchema = new mongoose.Schema({
         type: Number,
         required: true,
       },
-    },
+    }],
     required: false,
   },
 });
