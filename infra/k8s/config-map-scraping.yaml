@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-scraping
+data:
+  max_payload: "67108864" # 64 MB
+  # max_payload: "8388608" # 8 MB

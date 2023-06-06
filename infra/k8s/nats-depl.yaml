@@ -12,25 +12,30 @@ spec:
       labels:
         app: nats
     spec:
+      volumes:
+        - name: configmap-scraping-volume
+          configMap:
+            name: configmap-scraping
       containers:
         - name: nats
           image: nats-streaming:0.17.0
           args:
-            [
-              "-p",
-              "4222",
-              "-m",
-              "8222",
-              "-hbi",
-              "5s",
-              "-hbt",
-              "5s",
-              "-hbf",
-              "2",
-              "-SD",
-              "-cid",
-              "shopsmart",
-            ]
+            - "-p"
+            - "4222"
+            - "-m"
+            - "8222"
+            - "-hbi"
+            - "5s"
+            - "-hbt"
+            - "5s"
+            - "-hbf"
+            - "2"
+            - "-SD"
+            - "-cid"
+            - "shopsmart"
+          volumeMounts:
+            - name: configmap-scraping-volume
+              mountPath: /etc/config
 ---
 apiVersion: v1
 kind: Service

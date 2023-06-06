@@ -43,6 +43,8 @@ const scrape = async (url, page, products) => {
         priceValue = await priceSpan.evaluate((el) => el.textContent);
       }
 
+      console.log(titleValue);
+
       products.push({
         title: titleValue,
         description: descriptionValue,
@@ -71,7 +73,8 @@ const scrape = async (url, page, products) => {
     });
 
     const page = await browser.newPage();
-    const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product'
+    // const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product';
+    const url = 'https://zasiti.bg/?s=%D0%BA%D0%B0%D0%B9%D0%BC%D0%B0&action=wowmall_ajax_search&post_type=product';
 
     await scrape(url, page, products);
 

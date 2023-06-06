@@ -761,6 +761,8 @@ const scrape = async (url, page, products) => {
       unitValue = await unit.evaluate((el) => el.textContent);
     }
 
+    console.log(titleValue);
+
     products.push({
       title: titleValue,
       description: descriptionValue,
@@ -769,7 +771,6 @@ const scrape = async (url, page, products) => {
       unit: unitValue,
       productUrl
     });
-    console.log(titleValue);
   }
 };
 
@@ -783,6 +784,7 @@ const scrape = async (url, page, products) => {
  
     const products = [];
     for (const url of urlsToScrape) {
+      console.log(urlsToScrape);
       await scrape(url, page, products);
     }
 
@@ -831,6 +833,8 @@ const scrape = async (url, page, products) => {
         }
       ],
     });
+
+    console.log("Ready Scrapping should send");
   }
   catch(err) {
       parentPort.postMessage({ error: err });
