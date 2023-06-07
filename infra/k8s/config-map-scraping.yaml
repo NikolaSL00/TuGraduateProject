@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: configmap-scraping
 data:
-  max_payload: "67108864" # 64 MB
-  # max_payload: "8388608" # 8 MB
+  max_payload: "max_payload=32MB"
+  # max_payload: "max_payload=64MB" # 64 MB
+  # max_payload: "max_payload=8MB" # 8 MB

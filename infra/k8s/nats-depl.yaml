@@ -33,6 +33,8 @@ spec:
             - "-SD"
             - "-cid"
             - "shopsmart"
+            - "-c"
+            - "/etc/config/max_payload"
           volumeMounts:
             - name: configmap-scraping-volume
               mountPath: /etc/config
