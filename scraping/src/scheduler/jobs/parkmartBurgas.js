@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
-const fs = require('fs');
+
+const { parentPort } = require("worker_threads");
 
 const scrape = async (url, page, products) => {
   await page.goto(url);
@@ -28,6 +29,8 @@ const scrape = async (url, page, products) => {
         el.getAttribute("data-lazy-src")
       );
 
+      console.log(titleValue);
+
       products.push({
         title: titleValue,
         description: descriptionValue,
@@ -36,7 +39,7 @@ const scrape = async (url, page, products) => {
         unit: unitValue,
         productUrl: productUrl,
       });
-
+      console.log(products.length);
     }
 
     const nextPage = await page.$("a.next.page-numbers");
@@ -55,6 +58,7 @@ const scrape = async (url, page, products) => {
 
   const browser = await puppeteer.launch({
     headless: 'new',
+    protocolTimeout: 4_000_000,
   });
   
   try {

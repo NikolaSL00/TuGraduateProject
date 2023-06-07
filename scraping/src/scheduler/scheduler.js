@@ -22,30 +22,29 @@ export const scheduler = () => {
       //     isPhysical: false,
       //   },
       // ],
-      name: "zasiti",
+      name: "parkmartBurgas",
       // cron: '0 5,17 * * *', // runs the task twice a day at 5AM and 5 PM
       // timeout: 1200000, // 20 minutes
       interval: "60s",
       timeout: "25s",
-      worker: `zasiti.js`,
+      worker: `parkmartBurgas.js`,
       // interval: "5s",
     },
   ];
 
   function myWorkerMessageHandler(job) {
+    console.log('In myWorkerMessageHandler');
 
-    // console.log(job.message.error);
     if(job.message.error){
-      // console.log('error: ');
-      // console.log(job.name);
-      // console.log(job.message.error);
+      console.log('error: ');
+      console.log(job.name);
+      console.log(job.message.error);
     } else {
-      // console.log('finished');
-      // console.log(job.name);
-      // console.log(job.message.locations);
+      console.log('finished in else');
+      console.log(job.name);
+      console.log(job.message.locations);
       console.log(job.message.result.length);
     }
-    
 
     job.message.error
       ? sendEmail({
@@ -53,7 +52,6 @@ export const scheduler = () => {
           error: job.message.error,
         })
       : (() => {
-        console.log('should send message');
          try{
           new ScrapingStoreCompletedPublisher(natsWrapper.client).publish({
             name: job.name,
@@ -63,7 +61,6 @@ export const scheduler = () => {
          }catch(err){
           console.log(err);
          }
-          console.log('message sent!');
         })();
   }
 

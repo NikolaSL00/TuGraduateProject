@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const fs = require('fs');
+
 const { parentPort } = require("worker_threads");
 
 const scrape = async (url, page, products) => {

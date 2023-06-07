@@ -1,9 +1,11 @@
 const puppeteer = require('puppeteer');
 
+const { parentPort } = require("worker_threads");
+
 (async () => {
   const browser = await puppeteer.launch({
     headless: 'new',
-    protocolTimeout: 3_000_000, // 50 min
+    protocolTimeout: 4_000_000, // 50 min
 });
 
     try {
