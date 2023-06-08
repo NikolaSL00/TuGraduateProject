@@ -15,7 +15,7 @@ const scrape = async (url, page, products) => {
 
       const productUrl = await title.$eval("a", (el) => el.href);
 
-      const descriptionValue = "";
+      const descriptionValue = " ";
       let priceValue = await element.$eval(
         "div.final-price",
         (el) => el.textContent
@@ -57,10 +57,10 @@ const scrape = async (url, page, products) => {
   const products = [];
 
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: "new",
     protocolTimeout: 4_000_000,
   });
-  
+
   try {
     const page = await browser.newPage();
 
@@ -79,27 +79,25 @@ const scrape = async (url, page, products) => {
     }
 
     parentPort.postMessage({
-        result: products,
-        locations: [
-          {
-            country: "Bulgaria",
-            city: "Burgas",
-            isPhysical: true,
-            coordinates: [
-              {
-                latitude: 42.50078262172047, 
-                longitude: 27.480267182412366
-              }
-            ]
-          },
-        ],
-      });
-  }
-  catch(err) {
-      parentPort.postMessage({ error: err });
-  }
-  finally {
-      await browser.close();
-      process.exit(0);
+      result: products,
+      locations: [
+        {
+          country: "Bulgaria",
+          city: "Burgas",
+          isPhysical: true,
+          coordinates: [
+            {
+              latitude: 42.50078262172047,
+              longitude: 27.480267182412366,
+            },
+          ],
+        },
+      ],
+    });
+  } catch (err) {
+    parentPort.postMessage({ error: err });
+  } finally {
+    await browser.close();
+    process.exit(0);
   }
 })();

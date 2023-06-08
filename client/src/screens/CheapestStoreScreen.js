@@ -35,9 +35,6 @@ const CheapestStoreScreen = ({ navigation }) => {
     }
 
     for (let element of filteredProducts) {
-      if (!stores.includes(element.store)) {
-        stores.push(element.store);
-      }
     }
   };
 

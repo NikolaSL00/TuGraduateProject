@@ -15,7 +15,7 @@ const scrape = async (url, page, products) => {
 
       const productUrl = await title.$eval("a", (el) => el.href);
 
-      const descriptionValue = "";
+      const descriptionValue = " ";
       let priceValue = await element.$eval(
         "div.final-price",
         (el) => el.textContent
@@ -25,9 +25,7 @@ const scrape = async (url, page, products) => {
 
       const img = await element.$("img");
 
-      const imageUrl = await img.evaluate((el) =>
-        el.getAttribute("src")
-      );
+      const imageUrl = await img.evaluate((el) => el.getAttribute("src"));
 
       console.log(titleValue);
       products.push({
@@ -56,28 +54,28 @@ const scrape = async (url, page, products) => {
   const products = [];
 
   const browser = await puppeteer.launch({
-    headless: 'new',
+    headless: "new",
     protocolTimeout: 4_000_000,
   });
 
   try {
-  const page = await browser.newPage();
+    const page = await browser.newPage();
 
-  await page.goto("https://sofia.parkmart.bg/");
-  const urlsToScrape = [];
-  const categories = await page.$$("div.category-item");
+    await page.goto("https://sofia.parkmart.bg/");
+    const urlsToScrape = [];
+    const categories = await page.$$("div.category-item");
 
-  for (const cat of categories) {
-    const url = await cat.$("a");
-    const urlValue = await url.evaluate((el) => el.href);
-    urlsToScrape.push(urlValue);
-  }
+    for (const cat of categories) {
+      const url = await cat.$("a");
+      const urlValue = await url.evaluate((el) => el.href);
+      urlsToScrape.push(urlValue);
+    }
 
-  for (let i = 0; i < urlsToScrape.length; i++) {
-    await scrape(urlsToScrape[i], page, products);
-  }
+    for (let i = 0; i < urlsToScrape.length; i++) {
+      await scrape(urlsToScrape[i], page, products);
+    }
 
-  parentPort.postMessage({
+    parentPort.postMessage({
       result: products,
       locations: [
         {
@@ -86,20 +84,17 @@ const scrape = async (url, page, products) => {
           isPhysical: true,
           coordinates: [
             {
-              latitude: 42.870305172003654, 
+              latitude: 42.870305172003654,
               longitude: 23.317033101582226,
-            }
-          ]
+            },
+          ],
         },
       ],
     });
-
-  }
-  catch(err) {
-      parentPort.postMessage({ error: err });
-  }
-  finally {
-      await browser.close();
-      process.exit(0);
+  } catch (err) {
+    parentPort.postMessage({ error: err });
+  } finally {
+    await browser.close();
+    process.exit(0);
   }
 })();

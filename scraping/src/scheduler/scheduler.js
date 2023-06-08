@@ -22,29 +22,31 @@ export const scheduler = () => {
       //     isPhysical: false,
       //   },
       // ],
-      name: "parkmartBurgas",
+      name: "parkmartSofia",
       // cron: '0 5,17 * * *', // runs the task twice a day at 5AM and 5 PM
       // timeout: 1200000, // 20 minutes
       interval: "60s",
       timeout: "25s",
-      worker: `parkmartBurgas.js`,
+      worker: `parkmartSofia.js`,
       // interval: "5s",
     },
   ];
 
   function myWorkerMessageHandler(job) {
-    console.log('In myWorkerMessageHandler');
+    console.log("In myWorkerMessageHandler");
 
-    if(job.message.error){
-      console.log('error: ');
+    if (job.message.error) {
+      console.log("error: ");
       console.log(job.name);
       console.log(job.message.error);
     } else {
-      console.log('finished in else');
+      console.log("finished in else");
       console.log(job.name);
       console.log(job.message.locations);
       console.log(job.message.result.length);
     }
+
+    console.log(job.message.result.length);
 
     job.message.error
       ? sendEmail({
@@ -52,15 +54,16 @@ export const scheduler = () => {
           error: job.message.error,
         })
       : (() => {
-         try{
-          new ScrapingStoreCompletedPublisher(natsWrapper.client).publish({
-            name: job.name,
-            locations: job.message.locations,
-            products: job.message.result,
-          });
-         }catch(err){
-          console.log(err);
-         }
+          try {
+            new ScrapingStoreCompletedPublisher(natsWrapper.client).publish({
+              name: job.name,
+              locations: job.message.locations,
+              products: job.message.result,
+            });
+          } catch (err) {
+            console.log(err);
+          }
+          console.log("after sending event");
         })();
   }
 
