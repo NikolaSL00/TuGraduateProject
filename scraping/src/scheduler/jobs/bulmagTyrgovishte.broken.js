@@ -15,6 +15,8 @@ const { parentPort } = require("worker_threads");
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
+    console.log('Bulmag page loaded');
+
     const buttonOpenMenu = await page.$("button.btn-none.dropdown-toggle");
     await buttonOpenMenu.click();
 
@@ -29,19 +31,22 @@ const { parentPort } = require("worker_threads");
         await location.click();
       }
     }
+    console.log('Tyrgovishte selected')
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    await page.evaluate(async () => {
-      let scrollHeight = 0;
-
-      while (document.documentElement.scrollHeight > scrollHeight) {
-        scrollHeight = document.documentElement.scrollHeight;
-        window.scrollBy(0, scrollHeight);
-
-        await new Promise((resolve) => setTimeout(resolve, 3000));
-      }
-    });
+    let lastHeight = await page.evaluate('document.body.scrollHeight');
+    while (true) {
+          await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
+          await new Promise((resolve) => setTimeout(resolve, 3500));
+    
+          let newHeight = await page.evaluate('document.body.scrollHeight');
+          if (newHeight === lastHeight) {
+              break;
+          }
+          lastHeight = newHeight;
+          console.log(`scrolled to ${lastHeight} page height`);
+    }
 
     const elements = await page.$$(
       "div.h-100.d-flex.flex-column.text-center.position-relative"
