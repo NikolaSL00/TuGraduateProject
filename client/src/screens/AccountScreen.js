@@ -1,9 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext } from "react";
 import { View, StyleSheet, ScrollView, ToastAndroid } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { SearchBar, Card, Button, Text, Image } from "react-native-elements";
-
+import { Card, Button, Text } from "react-native-elements";
 import SelectDropdown from "react-native-select-dropdown";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { Context as AuthContext } from "../context/AuthContext";

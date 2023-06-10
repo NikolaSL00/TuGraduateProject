@@ -1,30 +1,39 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 
 import { useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
-import { Text } from "react-native-elements";
 
 const SeeOnMapScreen = () => {
   const route = useRoute();
-  const { coordinates } = route.params;
+  let { coordinates } = route.params;
+  coordinates = [].concat(...coordinates);
   const [currentCoordinates, setCurrentCoordinates] = useState(null);
   const [closestCoordinates, setClosestCoordinates] = useState(null);
   useFocusEffect(
     React.useCallback(() => {
-      console.log("start");
+      console.log("coordinates", coordinates);
       const getCurrentLocation = async () => {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          console.log("Permission to access location was denied.");
-          return;
-        }
-        const location = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = location.coords;
+        try {
+          const { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== "granted") {
+            console.log("Permission to access location was denied.");
+            return;
+          }
+          console.log("current");
 
-        setCurrentCoordinates({ latitude, longitude });
+          const location = await Location.getCurrentPositionAsync({});
+          console.log("current2");
+
+          const { latitude, longitude } = location.coords;
+
+          setCurrentCoordinates({ latitude, longitude });
+          console.log({ latitude, longitude });
+        } catch (err) {
+          console.log(err);
+        }
       };
       getCurrentLocation();
     }, [coordinates])

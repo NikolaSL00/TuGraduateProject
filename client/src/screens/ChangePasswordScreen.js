@@ -5,18 +5,10 @@ import { Ionicons } from "@expo/vector-icons";
 import api from "../api/baseUrl";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {
-  SearchBar,
-  Card,
-  Button,
-  Text,
-  Image,
-  Input,
-} from "react-native-elements";
+import { Card, Button, Text, Input } from "react-native-elements";
 
 const ChangePasswordScreen = () => {
   const navigation = useNavigation();
-  const [selectedValue, setSelectedValue] = useState("");
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [repeatNewPassword, setRepeatNewPassword] = useState("");

@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { View, StyleSheet, ScrollView } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Entypo } from "@expo/vector-icons";
-import { MaterialIcons } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SearchBar, Card, Button, Text, Image } from "react-native-elements";
-import { products } from "../helpers/exampleData";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import api from "./../api/baseUrl.js";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
@@ -14,26 +14,25 @@ const SearchScreen = () => {
   const [search, setSearch] = useState("");
   const [productsToShow, setProductsToShow] = useState([]);
   const [userLocation, setUserLocation] = useState("");
+  const [noResultFlag, setNoResultFlag] = useState(false);
 
-  const searchTerm = () => {
-    const searchTerms = search
-      .split(" ")
-      .map((term) => `(?=.*${term})`)
-      .join("");
-    const regex = new RegExp(searchTerms, "i");
-    const searchResults = products.filter((item) => regex.test(item.title));
-
-    const filterProductsByCity = searchResults.filter((product) => {
-      const locations = product.store.locations;
-      return locations.some((location) => location.city === userLocation);
-    });
-    const sortedProdcutsByPrice = filterProductsByCity.sort((a, b) => {
-      const priceA = parseFloat(a.price);
-      const priceB = parseFloat(b.price);
-      return priceA - priceB;
-    });
-
-    setProductsToShow(sortedProdcutsByPrice);
+  const searchTerm = async () => {
+    if (search) {
+      try {
+        const response = await api.post("/api/main/searchProduct", {
+          searchTerm: search,
+          userLocationCity: userLocation,
+        });
+        if (response.data.length == 0) {
+          setNoResultFlag(true);
+        } else {
+          setNoResultFlag(false);
+        }
+        setProductsToShow(response.data);
+      } catch (err) {
+        setErrorMessage("Something get wrong");
+      }
+    }
   };
 
   useFocusEffect(
@@ -64,6 +63,34 @@ const SearchScreen = () => {
         value={search}
         onEndEditing={searchTerm}
       />
+      {productsToShow.length == 0 && setNoResultFlag == false ? (
+        <View>
+          <FontAwesome
+            name="search"
+            size={200}
+            color="#d9d9d9"
+            alignSelf="center"
+            marginTop={130}
+          />
+          <Text style={{ margin: 20, alignSelf: "center", color: "#a6a6a6" }}>
+            Потърсете продукт като въведете неговото име...
+          </Text>
+        </View>
+      ) : null}
+      {noResultFlag == true ? (
+        <View>
+          <FontAwesome
+            name="search"
+            size={200}
+            color="#d9d9d9"
+            alignSelf="center"
+            marginTop={130}
+          />
+          <Text style={{ margin: 20, alignSelf: "center", color: "#a6a6a6" }}>
+            Няма намерени резултати...
+          </Text>
+        </View>
+      ) : null}
 
       {productsToShow.map((product, index) => (
         <Card key={index} style={styles.card}>
@@ -88,14 +115,22 @@ const SearchScreen = () => {
             style={{ width: "100%", height: 200, resizeMode: "contain" }}
           />
 
-          <View style={styles.cardInfo}>
-            <MaterialIcons
-              name="attach-money"
-              size={28}
-              color="#52525C"
-              marginTop={2}
-            />
-            <Text style={{ fontSize: 20 }}>{product.price}</Text>
+          <View
+            style={{
+              marginTop: 20,
+              marginBottom: 10,
+              backgroundColor: "#80aaff",
+              borderRadius: 25,
+            }}
+          >
+            <Text style={{ fontSize: 20, alignSelf: "center", color: "white" }}>
+              {product.price} лв
+            </Text>
+          </View>
+          <View style={{ marginBottom: 20 }}>
+            <Text style={{ fontSize: 15, alignSelf: "center" }}>
+              {product.title}
+            </Text>
           </View>
 
           <Button
@@ -130,7 +165,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
     backgroundColor: "rgba(0, 153, 51,0.4)",
   },
-  cardInfo: { flexDirection: "row", marginBottom: 10, marginTop: 10 },
+  cardInfo: { flexDirection: "row", marginBottom: 30, marginTop: 10 },
 });
 
 export default SearchScreen;

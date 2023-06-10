@@ -1,4 +1,4 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Card, Button, Text, Image, Icon } from "react-native-elements";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -67,13 +67,15 @@ const ProductDetailScreen = ({ navigation }) => {
         ) : null}
 
         <View style={styles.cardInfo}>
-          <MaterialIcons
+          {/* <MaterialIcons
             name="attach-money"
             size={28}
             color="#52525C"
             marginTop={2}
-          />
-          <Text style={{ fontSize: 20 }}>{product.price}</Text>
+          /> */}
+          <Text style={{ fontSize: 20, marginLeft: 2 }}>
+            {product.price} лв
+          </Text>
           <MaterialIcons
             name="food-bank"
             size={24}

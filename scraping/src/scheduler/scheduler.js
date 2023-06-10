@@ -23,10 +23,10 @@ export const scheduler = () => {
       //   },
       // ],
       name: "parkmartSofia",
-      // cron: '0 5,17 * * *', // runs the task twice a day at 5AM and 5 PM
-      // timeout: 1200000, // 20 minutes
-      interval: "60s",
-      timeout: "25s",
+      cron: "0 5,17 * * *", // runs the task twice a day at 5AM and 5 PM
+      timeout: 1200000, // 20 minutes
+      // interval: "60s",
+      // timeout: "25s",
       worker: `parkmartSofia.js`,
       // interval: "5s",
     },
