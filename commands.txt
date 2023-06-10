@@ -11,6 +11,13 @@ show collections
 docker context ls
 DOCKER_HOST=unix:///home/nikola/.docker/desktop/docker.sock skaffold dev
 
+// secret
+kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdf
+
+// create ingress nginx controller
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.0/deploy/static/provider/cloud/deploy.yaml
+// check ingress 
+k get services -n ingress-nginx
 
 
 // copy container files into local folder

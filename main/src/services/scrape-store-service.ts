@@ -46,17 +46,22 @@ export const processData = async (
     })
   );
 
+  console.log('creating products started');
   await Promise.all(
-    products.map(async (productData) => {
+    products.map(async (productData, index) => {
+      console.log(index);
+      productData.price = productData.price.replace(',', '.');
       const product = Product.build({
         ...productData,
         price: parseFloat(productData.price),
         store,
       });
+      console.log(`all products: ${products.length}`);
       await product.save();
       store.products.push(product);
     })
   );
+  console.log('finished with the products');
 
   await store.save();
   return store;
