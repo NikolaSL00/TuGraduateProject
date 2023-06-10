@@ -2,7 +2,7 @@ const puppeteer = require("puppeteer");
 
 const { parentPort } = require("worker_threads");
 
-const scrape = async (url, page, products) => {
+const scrape = async (url, page, products, skippedProducts) => {
   await page.goto(url);
   let nextPageUrl = url;
 
@@ -38,8 +38,16 @@ const scrape = async (url, page, products) => {
             const priceSpanDiscount = await element.$("div._product-price-inner > span._product-price-compare");
             priceValue = await priceSpanDiscount.evaluate(span => span.textContent);
         }
+        
+        priceValue = priceValue.split(' ')[0];
 
-        console.log(titleValue);
+        console.log(`${titleValue} <--> ${parseFloat(priceValue.replace(',', '.'))}`);
+        console.log('Skipped products due lack of price: ', skippedProducts);
+        if(isNaN(parseFloat(priceValue.replace(',', '.')))){
+          skippedProducts++;
+          continue;
+        }
+
         products.push({
             title: titleValue,
             description: descriptionValue,
@@ -63,6 +71,7 @@ const scrape = async (url, page, products) => {
       await page.goto(nextPageUrl);
     }
   }
+  return skippedProducts;
 };
 
 (async () => {
@@ -86,8 +95,10 @@ const scrape = async (url, page, products) => {
         urlsToScrape.add(url);
     }
 
+    let skippedProducts = 0;
     for (let url of urlsToScrape){
-        await scrape(url, page, products);
+        skippedProducts = await scrape(url, page, products, skippedProducts);
+        console.log('Returned number of skippedProducts', skippedProducts);
     }
 
     parentPort.postMessage({

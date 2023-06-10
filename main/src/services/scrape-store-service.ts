@@ -46,8 +46,10 @@ export const processData = async (
     })
   );
 
+  console.log(products[0].price);
   await Promise.all(
-    products.map(async (productData) => {
+    products.map(async (productData, index) => {
+      productData.price = productData.price.replace(',', '.');
       const product = Product.build({
         ...productData,
         price: parseFloat(productData.price),
