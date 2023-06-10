@@ -38,12 +38,12 @@ const scrape = async (url, page, products, skippedProducts) => {
             const priceSpanDiscount = await element.$("div._product-price-inner > span._product-price-compare");
             priceValue = await priceSpanDiscount.evaluate(span => span.textContent);
         }
-        
         priceValue = priceValue.split(' ')[0];
+        priceValue = priceValue.replace(',', '.');
 
-        console.log(`${titleValue} <--> ${parseFloat(priceValue.replace(',', '.'))}`);
+        console.log(`${titleValue} <--> ${parseFloat(priceValue)}`);
         console.log('Skipped products due lack of price: ', skippedProducts);
-        if(isNaN(parseFloat(priceValue.replace(',', '.')))){
+        if(isNaN(parseFloat(priceValue))) {
           skippedProducts++;
           continue;
         }
@@ -68,7 +68,7 @@ const scrape = async (url, page, products, skippedProducts) => {
         break;
       }
 
-      await page.goto(nextPageUrl);
+      await page.goto(`${nextPageUrl}?per_page=96`);
     }
   }
   return skippedProducts;
@@ -97,7 +97,7 @@ const scrape = async (url, page, products, skippedProducts) => {
 
     let skippedProducts = 0;
     for (let url of urlsToScrape){
-        skippedProducts = await scrape(url, page, products, skippedProducts);
+        skippedProducts = await scrape(`${url}?per_page=96`, page, products, skippedProducts);
         console.log('Returned number of skippedProducts', skippedProducts);
     }
 
