@@ -23,7 +23,7 @@ router.post(
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
-      throw new BadRequestError('Невалиден имейл');
+      throw new BadRequestError('Невалиден имейл или парола');
     }
 
     const passwordsMatch = await Password.compare(
@@ -31,7 +31,7 @@ router.post(
       password
     );
     if (!passwordsMatch) {
-      throw new BadRequestError('Невалидна парола');
+      throw new BadRequestError('Невалиден имейл или парола');
     }
 
     // Generate JWT
