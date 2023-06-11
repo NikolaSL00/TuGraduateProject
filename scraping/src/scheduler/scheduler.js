@@ -8,28 +8,49 @@ const {
 
 export const scheduler = () => {
   const jobs = [
+    // it will wait the previous job to finish and it will start the next job
+    // so it starts from 1AM untill all jobs are finished
+    // same thing at 1PM ...
     {
-      // name: 'zasiti',
-      // location: [
-      //   {
-      //     country: 'Bulgaria',
-      //     city: 'Varna',
-      //     isPhysical: false,
-      //   },
-      //   {
-      //     country: 'Bulgaria',
-      //     city: 'Burgas',
-      //     isPhysical: false,
-      //   },
-      // ],
-      name: "parkmartSofia",
-      cron: "0 5,17 * * *", // runs the task twice a day at 5AM and 5 PM
-      timeout: 1200000, // 20 minutes
-      // interval: "60s",
-      // timeout: "25s",
-      worker: `parkmartSofia.js`,
-      // interval: "5s",
+      name: "minamart",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `minamart.js`,
     },
+    {
+      name: "gastronom",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `gastronom.js`,
+    },
+    {
+      name: "shopGladen",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `shopGladen.js`,
+    },
+    {
+      name: "ebag",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `ebag.js`,
+    },
+    {
+      name: "parkmartSofia",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `parkmartSofia.js`,
+    },
+    {
+      name: "parkmartVarna",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `parkmartVarna.js`,
+    },
+    {
+      name: "parkmartBurgas",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `parkmartBurgas.js`,
+    },
+    {
+      name: "zasiti",
+      cron: "0 1,13 * * *", // runs the task twice a day at 1AM and 1PM
+      worker: `zasiti.js`,
+    }
   ];
 
   function myWorkerMessageHandler(job) {
