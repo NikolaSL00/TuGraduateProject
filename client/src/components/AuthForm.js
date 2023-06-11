@@ -14,16 +14,12 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
   const [repeatPasswordError,setRepeatPasswordError]=useState(null);
   const cities = ["Varna", "Sofia", "Plovdiv"];
 
-
- 
   const handleValueChange = (value) => {
-    
     setUserLocation(value);
   };
 
-
   return (
-    <View style={styles.view}>
+      <View style={styles.view}>
       <Spacer></Spacer>
       <Input
         label="Имейл"
@@ -104,15 +100,10 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 153, 51,0.4)", //light green
     marginHorizontal: 10,
   },
-  view: { marginHorizontal: 15, marginBottom: 40 },
-
-  input: {},
+  view: { marginHorizontal: 15 },
   selectStyle: {
-    marginTop: 10,
-    marginBottom: 10,
     alignSelf:"center",
     width: 320,
-   
   },
 });
 

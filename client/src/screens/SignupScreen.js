@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text } from "react-native-elements";
 import { Context as AuthContext } from "../context/AuthContext";
@@ -6,6 +6,9 @@ import { Context as AuthContext } from "../context/AuthContext";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AuthForm from "../components/AuthForm";
 import NavLink from "../components/NavLink";
+
+import KeyboardAvoidingComponent from "../components/KeyboardAvoidingComponent";
+
 const SignupScreen = () => {
   const navigation = useNavigation();
   const { state, signup, clearErrorMessage } = useContext(AuthContext);
@@ -15,6 +18,7 @@ const SignupScreen = () => {
     }, [])
   );
   return (
+  <KeyboardAvoidingComponent>
     <View style={styles.container}>
       <Text h1 style={styles.title}>
         ShopSmart
@@ -33,6 +37,7 @@ const SignupScreen = () => {
         />
       </TouchableOpacity>
     </View>
+  </KeyboardAvoidingComponent>    
   );
 };
 
@@ -44,14 +49,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    marginBottom: 250,
+    marginBottom: 100,
   },
   title: {
     color: "#52525C",
     textAlignVertical: "center",
     textAlign: "center",
     marginTop: 200,
-    marginBottom: 40,
   },
 });
 
