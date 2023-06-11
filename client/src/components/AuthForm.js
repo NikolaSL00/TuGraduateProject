@@ -14,6 +14,7 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
   const [repeatPasswordError,setRepeatPasswordError]=useState(null);
   const cities = ["Varna", "Sofia", "Plovdiv"];
 
+
   const handleValueChange = (value) => {
     setUserLocation(value);
   };

@@ -54,7 +54,6 @@ const styles = StyleSheet.create({
     color: "#52525C",
     textAlignVertical: "center",
     textAlign: "center",
-    marginBottom: 40,
   },
   nav: {},
 });
