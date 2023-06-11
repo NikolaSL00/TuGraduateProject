@@ -8,7 +8,10 @@ import SelectDropdown from "react-native-select-dropdown";
 const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [repeatPassword, setRepeatPassword] = useState("");
+
   const [userLocation, setUserLocation] = useState("Изберете локация");
+  const [repeatPasswordError,setRepeatPasswordError]=useState(null);
   const cities = ["Varna", "Sofia", "Plovdiv"];
 
 
@@ -44,8 +47,8 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
         <Input
           secureTextEntry
           label="Повтори парола"
-          value={password}
-          onChangeText={setPassword}
+          value={repeatPassword}
+          onChangeText={setRepeatPassword}
           autoCapitalize="none"
           autoCorrect={false}
           style={styles.input}
@@ -72,10 +75,16 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
       {errorMessage ? (
         <Text style={styles.errorMessage}>{errorMessage}</Text>
       ) : null}
+      {repeatPasswordError ? (
+        <Text style={styles.errorMessage}>{repeatPasswordError}</Text>
+      ) : null}
       <Spacer>
         <Button
           title={submitButtonText}
-          onPress={() => {onSubmit({ email, password,userLocation })}}
+          onPress={() => {if(password==repeatPassword){onSubmit({ email, password,userLocation })}
+        else{
+          setRepeatPasswordError("Паролите не съвпадат");
+        }}}
           buttonStyle={styles.button}
         />
       </Spacer>
