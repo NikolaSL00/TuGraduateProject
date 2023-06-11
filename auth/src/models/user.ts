@@ -6,7 +6,7 @@ import { Password } from "../services/password";
 interface UserAttrs {
   email: string;
   password: string;
-
+  locationCity: string;
 }
 
 // An interface that describes the properties
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema(
     },
     locationCity: {
       type: String,
-      required: false,
+      required: true,
     },
   },
   {

@@ -39,10 +39,10 @@ const SigninScreen = () => {
       clearErrorMessage();
     }, [])
   );
-  React.useEffect(() => {
-    console.log("here");
-    tryUrl();
-  }, []);
+  // React.useEffect(() => {
+  //   console.log("here");
+  //   tryUrl();
+  // }, []);
 
   return (
     <View style={styles.container}>

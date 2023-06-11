@@ -52,6 +52,7 @@ const scrape = async (url, page, products) => {
         unit: unitValue,
         productUrl: productUrl,
       });
+      console.log(products.length);
 
     }
     const nextPage = await page.$("a.next.page-numbers");

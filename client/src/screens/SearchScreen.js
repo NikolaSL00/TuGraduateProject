@@ -30,7 +30,8 @@ const SearchScreen = () => {
         }
         setProductsToShow(response.data);
       } catch (err) {
-        setErrorMessage("Something get wrong");
+        // setErrorMessage("Something get wrong");
+        console.log(err)
       }
     }
   };

@@ -36,22 +36,25 @@ const clearErrorMessage = (dispatch) => () => {
 
 const signup =
   (dispatch) =>
-  async ({ email, password }) => {
+  async ({ email, password,userLocation }) => {
     try {
-      const response = await api.post("api/users/signup", { email, password });
+      console.log("AUTH CONTEXT")
+      const response = await api.post("api/users/signup", { email, password,userLocation });
+      console.log("response",response.data)
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userEmail", response.data.userEmail);
       await AsyncStorage.setItem(
         "userLocationCity",
         response.data.userLocationCity
       );
-
+      
       dispatch({ type: "signin", payload: response.data.token });
       navigate("MainFlow", { screen: "Search" });
     } catch (err) {
+   
       dispatch({
         type: "add_error",
-        payload: "Something get wrong with sign up",
+        payload: err.response.data.errors[0].message,
       });
     }
   };
@@ -73,9 +76,8 @@ const signin =
     } catch (err) {
       dispatch({
         type: "add_error",
-        payload: "Something get wrong with sign in",
+        payload: err.response.data.errors[0].message,
       });
-      console.log(err.response.data);
     }
   };
 

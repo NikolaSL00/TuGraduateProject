@@ -15,10 +15,14 @@ router.post(
       .trim()
       .isLength({ min: 4, max: 20 })
       .withMessage('Паролата трябва да е между 4 и 20 символа'),
+    body('userLocation')
+      .not()
+      .equals('Изберете локация')
+      .withMessage('Няма избрана локация'),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email, password,userLocation } = req.body;
 
     const existingUser = await User.findOne({ email });
 
@@ -26,7 +30,7 @@ router.post(
       throw new BadRequestError('Вече съществува потребител с такъв имейл');
     }
 
-    const user = User.build({ email, password });
+    const user = User.build({ email, password,locationCity:userLocation });
 
     await user.save();
 

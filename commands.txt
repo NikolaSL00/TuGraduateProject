@@ -23,3 +23,5 @@ k get services -n ingress-nginx
 // copy container files into local folder
 docker ps
 docker cp container_name:/. /path/to/local/destination
+
+ngrok http --host-header=rewrite shopsmart.dev:443
