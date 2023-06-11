@@ -1,9 +1,7 @@
 import createDataContext from "./createDataContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { navigate } from "../navigationRef";
-import axios from "axios";
 import api from "../api/baseUrl";
-import { NativeModules } from "react-native";
 
 const authReducer = (state, action) => {
   switch (action.type) {
