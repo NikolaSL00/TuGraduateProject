@@ -1,11 +1,23 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Text, Input, Button } from "react-native-elements";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Spacer from "./Spacer";
+import SelectDropdown from "react-native-select-dropdown";
 
 const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userLocation, setUserLocation] = useState("Изберете локация");
+  const cities = ["Varna", "Sofia", "Plovdiv"];
+
+
+ 
+  const handleValueChange = (value) => {
+    
+    setUserLocation(value);
+  };
+
 
   return (
     <View style={styles.view}>
@@ -28,6 +40,7 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
         style={styles.input}
       />
       {signup ? (
+        <>
         <Input
           secureTextEntry
           label="Повтори парола"
@@ -37,6 +50,24 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
           autoCorrect={false}
           style={styles.input}
         />
+         <SelectDropdown
+            data={cities}
+            onSelect={handleValueChange}
+            buttonTextAfterSelection={() => userLocation}
+            rowTextForSelection={(item) => item}
+            buttonStyle={styles.selectStyle}
+            defaultButtonText={userLocation}
+            renderDropdownIcon={(isOpened) => {
+              return (
+                <FontAwesome
+                  name={isOpened ? "chevron-up" : "chevron-down"}
+                  color={"#444"}
+                  size={18}
+                />
+              );
+            }}
+          />
+        </>
       ) : null}
       {errorMessage ? (
         <Text style={styles.errorMessage}>{errorMessage}</Text>
@@ -44,7 +75,7 @@ const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
       <Spacer>
         <Button
           title={submitButtonText}
-          onPress={() => onSubmit({ email, password })}
+          onPress={() => {onSubmit({ email, password,userLocation })}}
           buttonStyle={styles.button}
         />
       </Spacer>
@@ -58,6 +89,7 @@ const styles = StyleSheet.create({
     color: "red",
     marginLeft: 15,
     marginTop: 1,
+    alignSelf:"center"
   },
   button: {
     backgroundColor: "rgba(0, 153, 51,0.4)", //light green
@@ -66,6 +98,13 @@ const styles = StyleSheet.create({
   view: { marginHorizontal: 15, marginBottom: 40 },
 
   input: {},
+  selectStyle: {
+    marginTop: 10,
+    marginBottom: 10,
+    alignSelf:"center",
+    width: 320,
+   
+  },
 });
 
 export default AuthForm;
