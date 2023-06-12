@@ -38,12 +38,7 @@ const BarcodeScannerScreen = () => {
             const metaTagContent = htmlDoc.documentElement.querySelectorAll('meta')[1].getAttribute('content');
             const productTags = metaTagContent.split(': ')[1].split(';');
             console.log(productTags);
-
              
-            // console.log(`product_name: ${response.data.product.product_name}`);
-            // console.log(`product_name_bg: ${response.data.product.product_name_bg}`);
-            // console.log(`product_name_en: ${response.data.product.product_name_en}`);
-            // console.log(`product_quantity: ${response.data.product.product_quantity}`);
         } catch(err) {
             console.log(err);
         }
@@ -71,8 +66,6 @@ const BarcodeScannerScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        // borderColor: 'black',
-        // borderWidth: 10,
     }
 });
 
