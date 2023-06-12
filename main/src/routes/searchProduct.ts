@@ -1,5 +1,4 @@
 import express from "express";
-import { Product } from "../models/product";
 import { Store } from "../models/store";
 import { BadRequestError } from "@shopsmart/common";
 const router = express.Router();
@@ -7,7 +6,7 @@ const router = express.Router();
 
 router.post("/api/main/searchProduct", async (req, res) => {
   const { searchTerm, userLocationCity } = req.body;
-  
+
   if (!searchTerm || !userLocationCity) {
     throw new BadRequestError('Невалидни данни');
   }
