@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SearchBar, Card, Button, Text, Image } from "react-native-elements";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import formatPrices from "../utils/formatPrices.js";
 import api from "./../api/baseUrl.js";
 
 const SearchScreen = () => {
@@ -15,9 +15,12 @@ const SearchScreen = () => {
   const [productsToShow, setProductsToShow] = useState([]);
   const [userLocation, setUserLocation] = useState("");
   const [noResultFlag, setNoResultFlag] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
   const searchTerm = async () => {
     if (search) {
+      setProductsToShow([]);
+      setIsSearching(true);
       try {
         const response = await api.post("/api/main/searchProduct", {
           searchTerm: search,
@@ -28,12 +31,13 @@ const SearchScreen = () => {
         } else {
           setNoResultFlag(false);
         }
-        setProductsToShow(response.data);
+
+        setProductsToShow(formatPrices(response.data));
       } catch (err) {
-        // setErrorMessage("Something get wrong");
-        console.log(err)
+        console.log(err);
       }
     }
+    setIsSearching(false);
   };
 
   useFocusEffect(
@@ -64,7 +68,11 @@ const SearchScreen = () => {
         value={search}
         onEndEditing={searchTerm}
       />
-      {productsToShow.length == 0 && setNoResultFlag == false ? (
+      {isSearching ? (
+        <ActivityIndicator size="large" style={styles.activityIndicator} />
+      ) : null}
+      {productsToShow.length == 0 &&
+      (noResultFlag == false) & (isSearching == false) ? (
         <View>
           <FontAwesome
             name="search"
@@ -78,7 +86,7 @@ const SearchScreen = () => {
           </Text>
         </View>
       ) : null}
-      {noResultFlag == true ? (
+      {noResultFlag == true && isSearching == false ? (
         <View>
           <FontAwesome
             name="search"
@@ -167,6 +175,11 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 153, 51,0.4)",
   },
   cardInfo: { flexDirection: "row", marginBottom: 30, marginTop: 10 },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default SearchScreen;
