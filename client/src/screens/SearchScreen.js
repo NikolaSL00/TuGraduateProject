@@ -63,6 +63,7 @@ const SearchScreen = () => {
         onChangeText={(searchText) => setSearch(searchText)}
         value={search}
         onEndEditing={searchTerm}
+        autoCapitalize='none'
       />
       {productsToShow.length == 0 && setNoResultFlag == false ? (
         <View>

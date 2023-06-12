@@ -16,7 +16,7 @@ const AccountScreen = () => {
   const [userLocation, setUserLocation] = useState("Изберете локация");
   const [newChangedLocation, setNewChangedLocation] = useState(false);
 
-  const cities = ["Varna", "Sofia", "Plovdiv"];
+  const cities = ["Varna", "Sofia", "Plovdiv","Burgas"];
 
   const setNewLocation = async () => {
     const userEmail = await AsyncStorage.getItem("userEmail");
