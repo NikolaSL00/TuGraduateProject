@@ -15,9 +15,11 @@ import ChangePasswordScreen from "./src/screens/ChangePasswordScreen";
 import ShoppingListScreen from "./src/screens/ShoppingListScreen";
 import CheapestStoreScreen from "./src/screens/CheapestStoreScreen";
 import StatisticsScreen from "./src/screens/StatisticsScreen";
+import ProductRecognizerMiddleScreen from "./src/screens/ProductRecognizerMiddleScreen";
 import { setNavigator } from "./src/navigationRef";
-import { Ionicons } from "@expo/vector-icons";
-import { Icon, IconRegistry, Provider } from "@react-native-material/core";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import BarcodeScannerScreen from "./src/screens/BarcodeScannerScreen";
+import TakeImageScreen from "./src/screens/TakeImageScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,6 +46,20 @@ const ShoppingListStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} />
     <Stack.Screen name="CheapestStoreScreen" component={CheapestStoreScreen} />
+  </Stack.Navigator>
+);
+
+const ProductRecognizerScreenStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="ProductRecognizerMiddleScreen"
+      component={ProductRecognizerMiddleScreen}
+    />
+    <Stack.Screen
+      name="BarcodeScannerScreen"
+      component={BarcodeScannerScreen}
+    />
+    <Stack.Screen name="TakeImageScreen" component={TakeImageScreen} />
   </Stack.Navigator>
 );
 
@@ -84,13 +100,27 @@ const TabNavigator = () => (
         headerShown: false,
       }}
     />
+    <Tab.Screen
+      name="Скенер"
+      component={ProductRecognizerScreenStack}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <MaterialCommunityIcons
+            name="barcode-scan"
+            size={size}
+            color={color}
+          />
+        ),
+        headerShown: false,
+      }}
+    />
   </Tab.Navigator>
 );
 
 const App = React.forwardRef((props, ref) => (
   <NavigationContainer ref={ref}>
     <Stack.Navigator>
-    {/* <Stack.Screen
+      {/* <Stack.Screen
         name="Statistics"
         component={StatisticsScreen}
         options={{ headerShown: false }}

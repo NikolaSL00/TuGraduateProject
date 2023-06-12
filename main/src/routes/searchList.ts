@@ -15,12 +15,14 @@ router.post("/api/main/searchList", async (req, res) => {
     }).populate({
         path: "products",
     });
+
     const filtersStoresByCity = stores.filter((store) => {
         const locations = store.locations;
         return locations.some((location) => location.city === userLocationCity);
     });
+
     let storeProducts = [];
-    for (const store of stores) {
+    for (const store of filtersStoresByCity) {
         let matchArray = [];
         for (const element of listData) {
             const searchTerms = element

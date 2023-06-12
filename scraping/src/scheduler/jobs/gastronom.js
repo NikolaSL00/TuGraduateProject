@@ -30,6 +30,7 @@ const scrape = async (url, page, products) => {
           );
         } catch(err) {
           console.log(err);
+          console.log('error is not a problem');
           continue;
         }
 
