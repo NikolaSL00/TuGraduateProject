@@ -38,7 +38,7 @@ const clearErrorMessage = (dispatch) => () => {
 
 const signup =
   (dispatch) =>
-  async ({ email, password, userLocation }) => {
+  async ({ email, password, userLocation, callback }) => {
     try {
       console.log("AUTH CONTEXT");
       const response = await api.post("api/users/signup", {
@@ -61,12 +61,14 @@ const signup =
         type: "add_error",
         payload: err.response.data.errors,
       });
+    } finally {
+      callback();
     }
   };
 
 const signin =
   (dispatch) =>
-  async ({ email, password }) => {
+  async ({ email, password, callback }) => {
     try {
       console.log("SIGNIN");
       const response = await api.post("api/users/signin", { email, password });
@@ -84,6 +86,8 @@ const signin =
         type: "add_error",
         payload: err.response.data.errors, //err.response.data.errors[0].message
       });
+    } finally {
+      callback();
     }
   };
 

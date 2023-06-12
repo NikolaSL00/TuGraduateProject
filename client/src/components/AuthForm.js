@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { Text, Input, Button } from "react-native-elements";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Spacer from "./Spacer";
 import SelectDropdown from "react-native-select-dropdown";
 
-const AuthForm = ({ errorMessages, formElements }) => {
+const AuthForm = ({ errorMessages, formElements, isSubmitting }) => {
   return (
     <View style={styles.view}>
       <Spacer></Spacer>
@@ -49,6 +49,9 @@ const AuthForm = ({ errorMessages, formElements }) => {
           );
         }
         if (element.type == "button") {
+          if (isSubmitting) {
+            return <ActivityIndicator key={index} />;
+          }
           return (
             <Button
               key={index}
@@ -59,6 +62,7 @@ const AuthForm = ({ errorMessages, formElements }) => {
           );
         }
       })}
+
       {errorMessages.map((element, index) => {
         return (
           <Text key={index} style={styles.errorMessage}>
@@ -77,7 +81,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "red",
     marginLeft: 15,
-    marginTop: 10,
+    marginTop: 5,
     alignSelf: "center",
     textAlign: "center",
   },

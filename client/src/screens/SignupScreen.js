@@ -17,16 +17,30 @@ const SignupScreen = () => {
   const [repeatPassword, setRepeatPassword] = useState("");
   const [userLocation, setUserLocation] = useState("Изберете локация");
   const [repeatPasswordError, setRepeatPasswordError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleValueChange = (value) => {
     setUserLocation(value);
+  };
+
+  const clearState = () => {
+    setEmail("");
+    setPassword("");
+    setRepeatPassword("");
+    setUserLocation("Изберете локация");
   };
 
   const onSubmit = () => {
     clearErrorMessage();
 
     if (password === repeatPassword) {
-      signup({ email, password, userLocation });
+      setIsSubmitting(true);
+      signup({
+        email,
+        password,
+        userLocation,
+        callback: () => setIsSubmitting(false),
+      });
       setRepeatPasswordError("");
     } else {
       setRepeatPasswordError("Паролите не са еднакви");
@@ -74,8 +88,10 @@ const SignupScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       clearErrorMessage();
+      clearState();
     }, [])
   );
+
   return (
     <KeyboardAvoidingComponent>
       <View style={styles.container}>
@@ -85,6 +101,7 @@ const SignupScreen = () => {
         <AuthForm
           errorMessages={[...state.errorMessage, repeatPasswordError]}
           formElements={formElements}
+          isSubmitting={isSubmitting}
         />
         <TouchableOpacity onPress={() => navigation.navigate("Signin")}>
           <NavLink
@@ -106,13 +123,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    marginBottom: 100,
   },
   title: {
     color: "#52525C",
     textAlignVertical: "center",
     textAlign: "center",
-    marginTop: 200,
+    marginTop: 150,
   },
 });
 

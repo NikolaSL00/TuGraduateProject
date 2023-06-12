@@ -5,16 +5,25 @@ import { Context as AuthContext } from "../context/AuthContext";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AuthForm from "../components/AuthForm";
 import NavLink from "../components/NavLink";
+import KeyboardAvoidingComponent from "../components/KeyboardAvoidingComponent";
 
 const SigninScreen = () => {
   const navigation = useNavigation();
   const { state, signin, clearErrorMessage } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = () => {
-    signin({ email, password });
+    setIsSubmitting(true);
+    signin({ email, password, callback: () => setIsSubmitting(false) });
   };
+
+  const clearState = () => {
+    setEmail("");
+    setPassword("");
+  };
+
   const formElements = [
     {
       type: "input",
@@ -39,6 +48,7 @@ const SigninScreen = () => {
   useFocusEffect(
     React.useCallback(() => {
       clearErrorMessage();
+      clearState();
     }, [])
   );
 
@@ -51,6 +61,7 @@ const SigninScreen = () => {
         <AuthForm
           errorMessages={state.errorMessage}
           formElements={formElements}
+          isSubmitting={isSubmitting}
         />
         <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
           <NavLink
@@ -62,24 +73,6 @@ const SigninScreen = () => {
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingComponent>
-    // <View style={styles.container}>
-    //   <Text h1 style={styles.title}>
-    //     ShopSmart
-    //   </Text>
-    //   <AuthForm
-    //     errorMessage={state.errorMessage}
-    //     submitButtonText="Вход"
-    //     onSubmit={signin}
-    //   />
-    //   <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-    //     <NavLink
-    //       navigation={navigation}
-    //       routeName="Signup"
-    //       text="Нямаш акаунт? Регистрирай се"
-    //       style={styles.nav}
-    //     />
-    //   </TouchableOpacity>
-    // </View>
   );
 };
 
@@ -91,14 +84,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    marginBottom: 250,
   },
   title: {
     color: "#52525C",
     textAlignVertical: "center",
     textAlign: "center",
-    marginTop: 90,
-    marginBottom: 40,
   },
   nav: {},
 });
