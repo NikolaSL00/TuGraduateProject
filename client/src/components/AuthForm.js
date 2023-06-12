@@ -5,85 +5,69 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Spacer from "./Spacer";
 import SelectDropdown from "react-native-select-dropdown";
 
-const AuthForm = ({ errorMessage, onSubmit, submitButtonText, signup }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
-
-  const [userLocation, setUserLocation] = useState("Изберете локация");
-  const [repeatPasswordError,setRepeatPasswordError]=useState(null);
-  const cities = ["Varna", "Sofia", "Plovdiv"];
-
-  const handleValueChange = (value) => {
-    setUserLocation(value);
-  };
-
+const AuthForm = ({ errorMessages, formElements }) => {
   return (
-      <View style={styles.view}>
+    <View style={styles.view}>
       <Spacer></Spacer>
-      <Input
-        label="Имейл"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        autoCorrect={false}
-      />
+      {formElements.map((element, index) => {
+        if (element.type == "input") {
+          const inputProps = {
+            key: index,
+            label: element.label,
+            value: element.value,
+            onChangeText: element.onChangeText,
+            autoCapitalize: element.autoCapitalize,
+            autoCorrect: element.autoCorrect,
+          };
 
-      <Input
-        secureTextEntry
-        label="Парола"
-        value={password}
-        onChangeText={setPassword}
-        autoCapitalize="none"
-        autoCorrect={false}
-        style={styles.input}
-      />
-      {signup ? (
-        <>
-        <Input
-          secureTextEntry
-          label="Повтори парола"
-          value={repeatPassword}
-          onChangeText={setRepeatPassword}
-          autoCapitalize="none"
-          autoCorrect={false}
-          style={styles.input}
-        />
-         <SelectDropdown
-            data={cities}
-            onSelect={handleValueChange}
-            buttonTextAfterSelection={() => userLocation}
-            rowTextForSelection={(item) => item}
-            buttonStyle={styles.selectStyle}
-            defaultButtonText={userLocation}
-            renderDropdownIcon={(isOpened) => {
-              return (
-                <FontAwesome
-                  name={isOpened ? "chevron-up" : "chevron-down"}
-                  color={"#444"}
-                  size={18}
-                />
-              );
-            }}
-          />
-        </>
-      ) : null}
-      {errorMessage ? (
-        <Text style={styles.errorMessage}>{errorMessage}</Text>
-      ) : null}
-      {repeatPasswordError ? (
-        <Text style={styles.errorMessage}>{repeatPasswordError}</Text>
-      ) : null}
-      <Spacer>
-        <Button
-          title={submitButtonText}
-          onPress={() => {if(password==repeatPassword){onSubmit({ email, password,userLocation })}
-        else{
-          setRepeatPasswordError("Паролите не съвпадат");
-        }}}
-          buttonStyle={styles.button}
-        />
-      </Spacer>
+          if (element.secureTextEntry) {
+            inputProps.secureTextEntry = true;
+          }
+
+          return <Input {...inputProps} />;
+        }
+        if (element.type == "selectDropdown") {
+          return (
+            <SelectDropdown
+              key={index}
+              data={element.data}
+              onSelect={element.onSelect}
+              buttonTextAfterSelection={() => element.buttonTextAfterSelection}
+              rowTextForSelection={(item) => item}
+              buttonStyle={styles.selectStyle}
+              defaultButtonText={element.defaultButtonText}
+              renderDropdownIcon={(isOpened) => {
+                return (
+                  <FontAwesome
+                    name={isOpened ? "chevron-up" : "chevron-down"}
+                    color={"#444"}
+                    size={18}
+                  />
+                );
+              }}
+            />
+          );
+        }
+        if (element.type == "button") {
+          return (
+            <Button
+              key={index}
+              title={element.title}
+              onPress={element.onSubmit}
+              buttonStyle={styles.button}
+            />
+          );
+        }
+      })}
+      {errorMessages.map((element, index) => {
+        return (
+          <Text key={index} style={styles.errorMessage}>
+            {element}
+          </Text>
+        );
+      })}
+
+      <Spacer></Spacer>
     </View>
   );
 };
@@ -93,8 +77,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "red",
     marginLeft: 15,
-    marginTop: 1,
-    alignSelf:"center"
+    marginTop: 10,
+    alignSelf: "center",
+    textAlign: "center",
   },
   button: {
     backgroundColor: "rgba(0, 153, 51,0.4)", //light green
@@ -102,7 +87,7 @@ const styles = StyleSheet.create({
   },
   view: { marginHorizontal: 15 },
   selectStyle: {
-    alignSelf:"center",
+    alignSelf: "center",
     width: 320,
   },
 });

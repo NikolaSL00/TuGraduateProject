@@ -3,16 +3,20 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { navigate } from "../navigationRef";
 import api from "../api/baseUrl";
 
+const toStringArray = (objectArray) => {
+  return objectArray.map((obj) => obj.message);
+};
+
 const authReducer = (state, action) => {
   switch (action.type) {
     case "add_error":
-      return { ...state, errorMessage: action.payload };
+      return { ...state, errorMessage: toStringArray(action.payload) };
     case "signin":
-      return { errorMessage: "", token: action.payload };
+      return { errorMessage: [], token: action.payload };
     case "signout":
-      return { token: null, errorMessage: "" };
+      return { token: null, errorMessage: [] };
     case "clear_error_message":
-      return { ...state, errorMessage: "" };
+      return { ...state, errorMessage: [] };
     default:
       return state;
   }
@@ -34,25 +38,28 @@ const clearErrorMessage = (dispatch) => () => {
 
 const signup =
   (dispatch) =>
-  async ({ email, password,userLocation }) => {
+  async ({ email, password, userLocation }) => {
     try {
-      console.log("AUTH CONTEXT")
-      const response = await api.post("api/users/signup", { email, password,userLocation });
-      console.log("response",response.data)
+      console.log("AUTH CONTEXT");
+      const response = await api.post("api/users/signup", {
+        email,
+        password,
+        userLocation,
+      });
+      console.log("response", response.data);
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userEmail", response.data.userEmail);
       await AsyncStorage.setItem(
         "userLocationCity",
         response.data.userLocationCity
       );
-      
+
       dispatch({ type: "signin", payload: response.data.token });
       navigate("MainFlow", { screen: "Search" });
     } catch (err) {
-   
       dispatch({
         type: "add_error",
-        payload: err.response.data.errors[0].message,
+        payload: err.response.data.errors,
       });
     }
   };
@@ -61,6 +68,7 @@ const signin =
   (dispatch) =>
   async ({ email, password }) => {
     try {
+      console.log("SIGNIN");
       const response = await api.post("api/users/signin", { email, password });
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userEmail", response.data.userEmail);
@@ -74,7 +82,7 @@ const signin =
     } catch (err) {
       dispatch({
         type: "add_error",
-        payload: err.response.data.errors[0].message,
+        payload: err.response.data.errors, //err.response.data.errors[0].message
       });
     }
   };
@@ -91,5 +99,5 @@ const signout = (dispatch) => async () => {
 export const { Provider, Context } = createDataContext(
   authReducer,
   { signin, signout, signup, clearErrorMessage, tryLocalSignin },
-  { token: null, errorMessage: "" }
+  { token: null, errorMessage: [] }
 );

@@ -14,6 +14,7 @@ import AccountScreen from "./src/screens/AccountScreen";
 import ChangePasswordScreen from "./src/screens/ChangePasswordScreen";
 import ShoppingListScreen from "./src/screens/ShoppingListScreen";
 import CheapestStoreScreen from "./src/screens/CheapestStoreScreen";
+import StatisticsScreen from "./src/screens/StatisticsScreen";
 import { setNavigator } from "./src/navigationRef";
 import { Ionicons } from "@expo/vector-icons";
 import { Icon, IconRegistry, Provider } from "@react-native-material/core";
@@ -89,6 +90,11 @@ const TabNavigator = () => (
 const App = React.forwardRef((props, ref) => (
   <NavigationContainer ref={ref}>
     <Stack.Navigator>
+    {/* <Stack.Screen
+        name="Statistics"
+        component={StatisticsScreen}
+        options={{ headerShown: false }}
+      /> */}
       <Stack.Screen
         name="ResolveAuth"
         component={ResolveAuthScreen}
