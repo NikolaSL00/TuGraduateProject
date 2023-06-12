@@ -6,8 +6,6 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AuthForm from "../components/AuthForm";
 import NavLink from "../components/NavLink";
 
-import KeyboardAvoidingComponent from "../components/KeyboardAvoidingComponent";
-
 const SigninScreen = () => {
   const navigation = useNavigation();
   const { state, signin, clearErrorMessage } = useContext(AuthContext);
@@ -18,8 +16,7 @@ const SigninScreen = () => {
   );
   
   return (
-    <KeyboardAvoidingComponent>
-      <View style={styles.container}>
+    <View style={styles.container}>
       <Text h1 style={styles.title}>
         ShopSmart
       </Text>
@@ -37,7 +34,6 @@ const SigninScreen = () => {
         />
       </TouchableOpacity>
     </View>
-    </KeyboardAvoidingComponent>
   );
 };
 
@@ -49,11 +45,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
+    marginBottom: 250,
   },
   title: {
     color: "#52525C",
     textAlignVertical: "center",
     textAlign: "center",
+    marginTop: 90,
+    marginBottom: 40,
   },
   nav: {},
 });
