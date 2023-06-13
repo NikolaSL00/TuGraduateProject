@@ -20,7 +20,7 @@ const scrape = async (url, page, products) => {
           (el) => el.href
         );
   
-        const descriptionValue = "";
+        const descriptionValue = " ";
   
         let priceValue;
         try{
