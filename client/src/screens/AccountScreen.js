@@ -17,15 +17,6 @@ const AccountScreen = () => {
   const [newChangedLocation, setNewChangedLocation] = useState(false);
   const [cities, setCities] = useState([]);
 
-  const getCities = async () => {
-    try {
-      const response = await api.get("/api/main/getCities");
-      setCities(response.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const setNewLocation = async () => {
     const userEmail = await AsyncStorage.getItem("userEmail");
 
@@ -51,33 +42,44 @@ const AccountScreen = () => {
     setUserLocation(value);
   };
 
-  useEffect(() => {
-    const getUserLocation = async () => {
-      try {
-        const userEmailFromStorage = await AsyncStorage.getItem("userEmail");
+  const getCities = async () => {
+    try {
+      const response = await api.get("/api/main/getCities");
+      setCities(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-        const userLocationCityFromStorage = await AsyncStorage.getItem(
-          "userLocationCity"
-        );
-        if (userEmailFromStorage) {
-          setUserEmail(userEmailFromStorage);
-        }
-        if (userLocationCityFromStorage) {
-          setUserLocation(userLocationCityFromStorage);
-        }
-      } catch (error) {
-        console.log("Грешка", error);
+  const getUserLocation = async () => {
+    try {
+      const userEmailFromStorage = await AsyncStorage.getItem("userEmail");
+
+      const userLocationCityFromStorage = await AsyncStorage.getItem(
+        "userLocationCity"
+      );
+      if (userEmailFromStorage) {
+        setUserEmail(userEmailFromStorage);
       }
-    };
+      if (userLocationCityFromStorage) {
+        setUserLocation(userLocationCityFromStorage);
+      }
+    } catch (error) {
+      console.log("Грешка", error);
+    }
+  };
 
-    getUserLocation();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getUserLocation();
+    }, [])
+  );
 
   useEffect(() => {
     getCities();
-    setUserLocation(userLocation);
-  }, []);
+  }, [])
 
+ 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
