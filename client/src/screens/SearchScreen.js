@@ -67,6 +67,7 @@ const SearchScreen = () => {
         onChangeText={(searchText) => setSearch(searchText)}
         value={search}
         onEndEditing={searchTerm}
+        autoCapitalize='none'
       />
       {isSearching ? (
         <ActivityIndicator size="large" style={styles.activityIndicator} />
