@@ -36,10 +36,9 @@ const CheapestStoreScreen = ({ navigation }) => {
       }
       let sumsForStores = [];
       for (const store of lowestPricesForStores) {
-        const sum = store.lowestPriceProducts.reduce(
-          (total, obj) => total + obj.price,
-          0
-        );
+        const sum = store.lowestPriceProducts
+          .reduce((total, obj) => total + obj.price, 0)
+          .toFixed(2);
         sumsForStores.push({
           store: store.store,
           sum: sum,

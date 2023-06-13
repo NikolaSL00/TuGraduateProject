@@ -81,15 +81,20 @@ const TabNavigator = () => (
       }}
     />
     <Tab.Screen
-      name="Акаунт"
-      component={AccountStack}
+      name="Скенер"
+      component={ProductRecognizerScreenStack}
       options={{
         tabBarIcon: ({ color, size }) => (
-          <Ionicons name="person-circle-outline" size={size} color={color} />
+          <MaterialCommunityIcons
+            name="barcode-scan"
+            size={size}
+            color={color}
+          />
         ),
         headerShown: false,
       }}
     />
+
     <Tab.Screen
       name="Списък за пазар"
       component={ShoppingListStack}
@@ -101,15 +106,11 @@ const TabNavigator = () => (
       }}
     />
     <Tab.Screen
-      name="Скенер"
-      component={ProductRecognizerScreenStack}
+      name="Акаунт"
+      component={AccountStack}
       options={{
         tabBarIcon: ({ color, size }) => (
-          <MaterialCommunityIcons
-            name="barcode-scan"
-            size={size}
-            color={color}
-          />
+          <Ionicons name="person-circle-outline" size={size} color={color} />
         ),
         headerShown: false,
       }}
