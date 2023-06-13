@@ -2,12 +2,11 @@ import React, { useContext, useState } from "react";
 import { View, StyleSheet, TouchableOpacity } from "react-native";
 import { Text } from "react-native-elements";
 import { Context as AuthContext } from "../context/AuthContext";
-
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import AuthForm from "../components/AuthForm";
 import NavLink from "../components/NavLink";
-
 import KeyboardAvoidingComponent from "../components/KeyboardAvoidingComponent";
+import api from "./../api/baseUrl.js";
 
 const SignupScreen = () => {
   const navigation = useNavigation();
@@ -18,7 +17,7 @@ const SignupScreen = () => {
   const [userLocation, setUserLocation] = useState("Изберете локация");
   const [repeatPasswordError, setRepeatPasswordError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [cities, setCities] = useState([]);
   const handleValueChange = (value) => {
     setUserLocation(value);
   };
@@ -46,7 +45,6 @@ const SignupScreen = () => {
       setRepeatPasswordError("Паролите не са еднакви");
     }
   };
-  const cities = ["Varna", "Sofia", "Plovdiv"];
 
   const formElements = [
     {
@@ -85,10 +83,20 @@ const SignupScreen = () => {
     { type: "button", title: "Регистрация", onSubmit },
   ];
 
+  const getCities = async () => {
+    try {
+      const response = await api.get("/api/main/getCities");
+      setCities(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       clearErrorMessage();
       clearState();
+      getCities();
     }, [])
   );
 

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, StyleSheet, ScrollView, ToastAndroid } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
@@ -15,8 +15,16 @@ const AccountScreen = () => {
   const [userEmail, setUserEmail] = useState("");
   const [userLocation, setUserLocation] = useState("Изберете локация");
   const [newChangedLocation, setNewChangedLocation] = useState(false);
+  const [cities, setCities] = useState([]);
 
-  const cities = ["Varna", "Sofia", "Plovdiv"];
+  const getCities = async () => {
+    try {
+      const response = await api.get("/api/main/getCities");
+      setCities(response.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const setNewLocation = async () => {
     const userEmail = await AsyncStorage.getItem("userEmail");
@@ -43,35 +51,33 @@ const AccountScreen = () => {
     setUserLocation(value);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const getUserLocation = async () => {
-        try {
-          const userEmailFromStorage = await AsyncStorage.getItem("userEmail");
+  useEffect(() => {
+    const getUserLocation = async () => {
+      try {
+        const userEmailFromStorage = await AsyncStorage.getItem("userEmail");
 
-          const userLocationCityFromStorage = await AsyncStorage.getItem(
-            "userLocationCity"
-          );
-          if (userEmailFromStorage) {
-            setUserEmail(userEmailFromStorage);
-          }
-          if (userLocationCityFromStorage) {
-            setUserLocation(userLocationCityFromStorage);
-          }
-        } catch (error) {
-          console.log("Грешка", error);
+        const userLocationCityFromStorage = await AsyncStorage.getItem(
+          "userLocationCity"
+        );
+        if (userEmailFromStorage) {
+          setUserEmail(userEmailFromStorage);
         }
-      };
+        if (userLocationCityFromStorage) {
+          setUserLocation(userLocationCityFromStorage);
+        }
+      } catch (error) {
+        console.log("Грешка", error);
+      }
+    };
 
-      getUserLocation();
-    }, [])
-  );
+    getUserLocation();
+  }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setUserLocation(userLocation);
-    }, [])
-  );
+  useEffect(() => {
+    getCities();
+    setUserLocation(userLocation);
+  }, []);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>
