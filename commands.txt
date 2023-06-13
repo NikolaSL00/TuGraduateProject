@@ -7,6 +7,8 @@ use db_name
 
 show collections
 
+db.stores.find({}, {name: 1})
+
 // Linux
 docker context ls
 DOCKER_HOST=unix:///home/nikola/.docker/desktop/docker.sock skaffold dev
