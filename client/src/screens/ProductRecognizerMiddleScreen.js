@@ -7,11 +7,12 @@ import Spacer from '../components/Spacer';
 const ProductRecognizerMiddleScreen = () => {
     const navigation = useNavigation();
 
-
-
     return  <View style={styles.container}>
             <Text>Избери</Text>
-
+            
+            {/* <Button title='Търси по име на продукта' onPress={() => navigation.navigate('SearchScreen')}/>
+            <Spacer/>
+            <Spacer/> */}
             <Button title='Пакетирана храна' onPress={() => navigation.navigate('BarcodeScannerScreen')}/>
             <Spacer/>
             <Button title='Плодове и зеленчуци' onPress={() => navigation.navigate('TakeImageScreen')}/>

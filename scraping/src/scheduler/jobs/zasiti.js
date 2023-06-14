@@ -53,7 +53,6 @@ const scrape = async (url, page, products) => {
         productUrl: productUrl,
       });
       console.log(products.length);
-
     }
     const nextPage = await page.$("a.next.page-numbers");
     if (nextPage) {
@@ -69,12 +68,13 @@ const scrape = async (url, page, products) => {
   let products = [];
 
   const browser = await puppeteer.launch({
-    headless: 'new', // Run the browser with a visible UI
+    headless: "new", // Run the browser with a visible UI
   });
-  
+
   try {
     const page = await browser.newPage();
-    const url = 'https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product';
+    const url =
+      "https://zasiti.bg/?s=&action=wowmall_ajax_search&post_type=product";
     // const url = 'https://zasiti.bg/?s=%D0%BA%D0%B0%D0%B9%D0%BC%D0%B0&action=wowmall_ajax_search&post_type=product';
 
     await scrape(url, page, products);
@@ -89,12 +89,10 @@ const scrape = async (url, page, products) => {
         },
       ],
     });
-    
   } catch (err) {
     parentPort.postMessage({ error: err });
-  }
-  finally {
+  } finally {
     await browser.close();
     process.exit(0);
-}
+  }
 })();

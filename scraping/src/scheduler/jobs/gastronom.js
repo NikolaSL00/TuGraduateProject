@@ -5,55 +5,50 @@ const { parentPort } = require("worker_threads");
 const scrape = async (url, page, products) => {
   await page.goto(url);
   let nextPageUrl = url;
-  
+
   while (nextPageUrl) {
     const elements = await page.$$("div.item.product-card");
 
-      for (const element of elements) {
-        const titleValue = await element.$eval(
-          "h3.title",
-          (el) => el.textContent
-        );
-  
-        const productUrl = await element.$eval(
-          "a.product-page-link",
-          (el) => el.href
-        );
-  
-        const descriptionValue = " ";
-  
-        let priceValue;
-        try{
-          priceValue = await element.$eval(
-            "span.prize",
-            (el) => el.textContent
-          );
-        } catch(err) {
-          console.log(err);
-          console.log('error is not a problem');
-          continue;
-        }
+    for (const element of elements) {
+      const titleValue = await element.$eval(
+        "h3.title",
+        (el) => el.textContent
+      );
 
-        priceValue = priceValue.replace(/\s+/g, "");
-  
-        const imageUrl = await element.$eval("img", (img) => img.src);
-  
-        const unitDiv = await element.$("div.tag.bg-gray.weight");
-        let unitValue = await unitDiv.$eval("span", (el) => el.textContent);
-        unitValue = unitValue.replace(/\s+/g, "");
-  
-        products.push({
-          title: titleValue,
-          description: descriptionValue,
-          imageUrl: imageUrl,
-          price: priceValue,
-          unit: unitValue,
-          productUrl: productUrl,
-        });
+      const productUrl = await element.$eval(
+        "a.product-page-link",
+        (el) => el.href
+      );
 
+      const descriptionValue = " ";
+
+      let priceValue;
+      try {
+        priceValue = await element.$eval("span.prize", (el) => el.textContent);
+      } catch (err) {
+        console.log(err);
+        console.log("error is not a problem");
+        continue;
       }
 
-    
+      priceValue = priceValue.replace(/\s+/g, "");
+
+      const imageUrl = await element.$eval("img", (img) => img.src);
+
+      const unitDiv = await element.$("div.tag.bg-gray.weight");
+      let unitValue = await unitDiv.$eval("span", (el) => el.textContent);
+      unitValue = unitValue.replace(/\s+/g, "");
+
+      products.push({
+        title: titleValue,
+        description: descriptionValue,
+        imageUrl: imageUrl,
+        price: priceValue,
+        unit: unitValue,
+        productUrl: productUrl,
+      });
+    }
+
     const nextPageLi = await page.$("li.next.disabled");
 
     if (nextPageLi) {
@@ -72,12 +67,13 @@ const scrape = async (url, page, products) => {
   const products = [];
 
   const browser = await puppeteer.launch({
-    headless: 'new', // Run the browser with a visible UI
+    headless: "new", // Run the browser with a visible UI
   });
 
   try {
     const page = await browser.newPage();
-    const urlToScrape = "https://gastronom.bg/products?query=&order-by=date&sorted-by=desc&limit=100";
+    const urlToScrape =
+      "https://gastronom.bg/products?query=&order-by=date&sorted-by=desc&limit=100";
     await scrape(urlToScrape, page, products);
 
     parentPort.postMessage({
@@ -90,17 +86,15 @@ const scrape = async (url, page, products) => {
         },
         {
           country: "Bulgaria",
-          city:"Sofia",
+          city: "Sofia",
           isPhysical: false,
         },
       ],
     });
-  }
-  catch(err) {
-      parentPort.postMessage({ error: err });
-  }
-  finally {
-      await browser.close();
-      process.exit(0);
+  } catch (err) {
+    parentPort.postMessage({ error: err });
+  } finally {
+    await browser.close();
+    process.exit(0);
   }
 })();
