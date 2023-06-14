@@ -50,7 +50,7 @@ export const scheduler = () => {
       name: "zasiti",
       cron: "0 8,20 * * *", // starts at 8 AM and 8 PM
       worker: `zasiti.js`,
-    }
+    },
   ];
 
   function myWorkerMessageHandler(job) {

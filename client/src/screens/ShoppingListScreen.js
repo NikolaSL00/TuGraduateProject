@@ -77,7 +77,7 @@ const ShoppingListScreen = () => {
       <View style={styles.buttonView}>
         {listData.length > 0 ? (
           <Button
-            title="Намери най-изгоден магазин"
+            title="Намери цените в магазините"
             onPress={() =>
               navigation.navigate("CheapestStoreScreen", {
                 listData,
