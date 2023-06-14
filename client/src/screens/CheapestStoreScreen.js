@@ -1,20 +1,26 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text, ScrollView } from "react-native";
-import { Card, Image } from "react-native-elements";
+import { Card, Image, Button, Icon } from "react-native-elements";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "./../api/baseUrl.js";
 import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
 const CheapestStoreScreen = ({ navigation }) => {
   const route = useRoute();
   const { listData } = route.params;
+  const [isLoading, setisLoading] = useState(true);
   const [userLocation, setUserLocation] = useState("");
-  const [cheapestStore, setCheapestStore] = useState({
-    store: { name: "", locations: {} },
-    sum: 0,
-    products: [],
-  });
+  // const [cheapestStore, setCheapestStore] = useState({
+  //   store: { name: "", locations: {} },
+  //   sum: 0,
+  //   products: [],
+  // });
+  const [storesVariants, setStoresVariants] = useState([
+    { store: { name: "", locations: {} }, sum: 0, products: [] },
+  ]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const findCheapestStore = async () => {
     try {
@@ -28,27 +34,38 @@ const CheapestStoreScreen = ({ navigation }) => {
       for (const store of stores) {
         let lowest = { store: store.store, lowestPriceProducts: [] };
         for (const productsArray of store.products) {
+          //magazina ima produkti v masivi, koito matchvat opredlen regex,
           productsArray.sort((a, b) => a.price - b.price);
-          const lowestPriceObject = productsArray[0];
+          const lowestPriceObject = productsArray[0]; //ot tqh se izbira nai-evtiniq
           lowest.lowestPriceProducts.push(lowestPriceObject);
         }
-        lowestPricesForStores.push(lowest);
+        lowestPricesForStores.push(lowest); //masiv s nai-evitinite produkti za edin magaizn
       }
-      let sumsForStores = [];
+      let storesWithSumPrice = [];
       for (const store of lowestPricesForStores) {
+        //sumirat se cenite na produktite za vseki magazin i se izbira nai-evtinata
         const sum = store.lowestPriceProducts
           .reduce((total, obj) => total + obj.price, 0)
           .toFixed(2);
-        sumsForStores.push({
+        storesWithSumPrice.push({
           store: store.store,
           sum: sum,
           products: store.lowestPriceProducts,
         });
       }
 
-      sumsForStores.sort((a, b) => a.sum - b.sum);
-      const lowestPriceStore = sumsForStores[0];
-      setCheapestStore(lowestPriceStore);
+      storesWithSumPrice.sort((a, b) => {
+        if (a.products.length !== b.products.length) {
+          return a.products.length - b.products.length;
+        }
+        return a.sum - b.sum;
+      });
+
+      // const lowestPriceStore = storesWithSumPrice[0];
+
+      // setCheapestStore(lowestPriceStore);
+
+      setStoresVariants(storesWithSumPrice);
     } catch (err) {
       // setErrorMessage("Something get wrong");
       console.log(err.response.data.errors[0].message);
@@ -69,6 +86,21 @@ const CheapestStoreScreen = ({ navigation }) => {
     }
   };
 
+  const getNextStore = () => {
+    if (storesVariants[currentIndex + 1]) {
+      setCurrentIndex((currentIndex) => currentIndex + 1);
+    } else {
+      setCurrentIndex(0);
+    }
+  };
+  const getPreviousStore = () => {
+    if (storesVariants[currentIndex - 1]) {
+      setCurrentIndex((currentIndex) => currentIndex - 1);
+    } else {
+      setCurrentIndex(storesVariants.length - 1);
+    }
+  };
+
   useFocusEffect(
     React.useCallback(() => {
       getUserLocation();
@@ -85,29 +117,74 @@ const CheapestStoreScreen = ({ navigation }) => {
   return (
     <ScrollView>
       <Card>
-        <Text style={styles.title}>Най-изгодни цени</Text>
         <View style={styles.storeContainer}>
-          <Ionicons
-            name="pricetag-outline"
-            size={24}
-            color="green"
-            marginTop={10}
-            marginRight={5}
+          <Button
+            icon={
+              <AntDesign
+                name="arrowleft"
+                size={18}
+                color="black"
+                style={{ color: "#737373" }}
+              />
+            }
+            buttonStyle={{
+              backgroundColor: "white",
+              width: 40,
+              height: 30,
+              marginTop: 3,
+            }}
+            onPress={() => getPreviousStore()}
           />
-          <Text style={styles.storeName}>{cheapestStore.store.name}</Text>
-        </View>
+          {currentIndex == 0 ? (
+            <Ionicons
+              name="pricetag-outline"
+              size={24}
+              color="green"
+              marginTop={10}
+              marginRight={5}
+            />
+          ) : null}
 
+          <Text style={styles.storeName}>
+            {storesVariants[currentIndex].store.name}
+          </Text>
+          <Button
+            icon={
+              <AntDesign
+                name="arrowright"
+                size={18}
+                color="black"
+                style={{ color: "#737373" }}
+              />
+            }
+            buttonStyle={{
+              backgroundColor: "white",
+              width: 40,
+              height: 30,
+              marginTop: 3,
+            }}
+            onPress={() => getNextStore()}
+          />
+        </View>
         <Text style={styles.infoText}>
-          Обща цена за продуктите:{" "}
-          <Text style={styles.infoValue}>{cheapestStore.sum} лв</Text>
+          Продукти от списъка:{" "}
+          <Text style={styles.infoValue}>{listData.length}</Text>
         </Text>
         <Text style={styles.infoText}>
-          Намерени продукти от списъка:{" "}
-          <Text style={styles.infoValue}>{cheapestStore.products.length}</Text>
+          Намерени продукти:{" "}
+          <Text style={styles.infoValue}>
+            {storesVariants[currentIndex].products.length}
+          </Text>
+        </Text>
+        <Text style={styles.infoText}>
+          Обща цена за продуктите:{" "}
+          <Text style={styles.infoValue}>
+            {storesVariants[currentIndex].sum} лв
+          </Text>
         </Text>
       </Card>
       <View style={styles.productContainer}>
-        {cheapestStore.products.map((product, index) => (
+        {storesVariants[currentIndex].products.map((product, index) => (
           <Card key={index} style={styles.card}>
             <View style={styles.cardInfo}>
               {product.isPhysical ? (
