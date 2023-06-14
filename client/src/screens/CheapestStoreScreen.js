@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { Card, Image, Button, Icon } from "react-native-elements";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -66,6 +72,7 @@ const CheapestStoreScreen = ({ navigation }) => {
       // setCheapestStore(lowestPriceStore);
 
       setStoresVariants(storesWithSumPrice);
+      setisLoading(false);
     } catch (err) {
       // setErrorMessage("Something get wrong");
       console.log(err.response.data.errors[0].message);
@@ -113,8 +120,7 @@ const CheapestStoreScreen = ({ navigation }) => {
       }
     }, [userLocation])
   );
-
-  return (
+  const content = (
     <ScrollView>
       <Card>
         <View style={styles.storeContainer}>
@@ -210,6 +216,12 @@ const CheapestStoreScreen = ({ navigation }) => {
       </View>
     </ScrollView>
   );
+
+  return isLoading ? (
+    <ActivityIndicator size="large" style={styles.activityIndicator} />
+  ) : (
+    content
+  );
 };
 
 CheapestStoreScreen.navigationOptions = {
@@ -267,6 +279,11 @@ const styles = StyleSheet.create({
   productTitle: {
     fontSize: 15,
     alignSelf: "center",
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
