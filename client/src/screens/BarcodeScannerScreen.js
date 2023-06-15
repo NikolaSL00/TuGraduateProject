@@ -3,8 +3,10 @@ import {View, Text, StyleSheet, Button} from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import axios from 'axios';
 import IDOMParser from 'advanced-html-parser';
+import { useNavigation } from '@react-navigation/native';
 
 const BarcodeScannerScreen = () => {
+    const navigation = useNavigation();
     const [hasPermission, setHasPermission] = useState(null);
     const [scanned, setScanned] = useState(false);
 
@@ -21,7 +23,6 @@ const BarcodeScannerScreen = () => {
         setScanned(true);
         console.log(`Searching for the barcode ${data}`);
 
-        alert(`Bar code with type ${type} and data ${data} has been scanned!`);
 
         try {
             const response = await axios.get(`https://barcode.bg/barcode/BG/%D0%98%D0%BD%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%86%D0%B8%D1%8F-%D0%B7%D0%B0-%D0%B1%D0%B0%D1%80%D0%BA%D0%BE%D0%B4.htm?barcode=${data}`);
@@ -31,13 +32,19 @@ const BarcodeScannerScreen = () => {
             
             // gets the title of the page, which is simmilar to first el of productTags
             const [productTitle, barcode] = title.split(' - Баркод: ');
-            console.log(productTitle);
+            alert(`Bar code ${data} and found product with label ${productTitle}`);
+
 
             // get all possible labels for the product
             // sometimes the second is better then the first
             const metaTagContent = htmlDoc.documentElement.querySelectorAll('meta')[1].getAttribute('content');
-            const productTags = metaTagContent.split(': ')[1].split(';');
-            console.log(productTags);
+            if(metaTagContent) {
+                const productTags = metaTagContent.split(': ')[1].split(';');
+                // navigation.navigate("SearchScreen", { productTags })
+            } else {
+                // product not found
+            }
+
              
         } catch(err) {
             console.log(err);

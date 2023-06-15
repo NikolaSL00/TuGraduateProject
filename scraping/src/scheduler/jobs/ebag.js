@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer');
-const { parentPort } = require('worker_threads');
+const puppeteer = require("puppeteer");
+const { parentPort } = require("worker_threads");
 
 const mainUrls = [
   "https://www.ebag.bg/categories/khliab/494",
@@ -21,48 +21,48 @@ const mainUrls = [
 const scrape = async (url, page, products) => {
   await page.goto(url);
 
-  let lastHeight = await page.evaluate('document.body.scrollHeight');
-        while (true) {
-          await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-          await new Promise((resolve) => setTimeout(resolve, 3000)); 
-  
-          let newHeight = await page.evaluate('document.body.scrollHeight');
-          if (newHeight === lastHeight) {
-              break;
-          }
-          lastHeight = newHeight;
-          console.log(`scrolled to ${lastHeight} page height`);
-      }
+  let lastHeight = await page.evaluate("document.body.scrollHeight");
+  while (true) {
+    await page.evaluate("window.scrollTo(0, document.body.scrollHeight)");
+    await new Promise((resolve) => setTimeout(resolve, 750));
 
-  const elements = await page.$$('article.item');
+    let newHeight = await page.evaluate("document.body.scrollHeight");
+    if (newHeight === lastHeight) {
+      break;
+    }
+    lastHeight = newHeight;
+    console.log(`scrolled to ${lastHeight} page height`);
+  }
+
+  const elements = await page.$$("article.item");
 
   for (const element of elements) {
-    const title = await element.$('h2');
+    const title = await element.$("h2");
     const titleValue = await title.evaluate((el) => el.textContent);
 
-    const productUrl = await title.$eval('a', (el) => el.href);
-    const description = await element.$('p.product-expiry-date');
-    let descriptionValue = ' ';
+    const productUrl = await title.$eval("a", (el) => el.href);
+    const description = await element.$("p.product-expiry-date");
+    let descriptionValue = " ";
     if (description) {
       descriptionValue = await description.evaluate((el) => el.textContent);
     }
 
-    const images = await element.$$eval('img', (imgs) => {
+    const images = await element.$$eval("img", (imgs) => {
       return imgs.map((x) => x.src);
     });
 
     const imageUrl = images[0];
-    const newPrice = await element.$('p.new-price');
+    const newPrice = await element.$("p.new-price");
     let priceValue = 0.0;
     if (newPrice) {
       priceValue = await newPrice.evaluate((el) => el.textContent);
     } else {
-      const price = await element.$('p.product-price');
+      const price = await element.$("p.product-price");
       priceValue = await price.evaluate((el) => el.textContent);
     }
 
-    const unit = await element.$('.price-per-kg');
-    let unitValue = '';
+    const unit = await element.$(".price-per-kg");
+    let unitValue = "";
     if (unit) {
       unitValue = await unit.evaluate((el) => el.textContent);
     }
@@ -75,17 +75,16 @@ const scrape = async (url, page, products) => {
       imageUrl,
       price: priceValue,
       unit: unitValue,
-      productUrl
+      productUrl,
     });
   }
 };
 
 (async () => {
-  
   const products = [];
 
   const browser = await puppeteer.launch({
-    headless: 'new', 
+    headless: "new",
     protocolTimeout: 4_000_000, // > 1 hr
   });
 
@@ -102,7 +101,7 @@ const scrape = async (url, page, products) => {
         const aHref = await a.evaluate((el) => el.href);
         urls.push(aHref);
       }
-  
+
       for (let j = 0; j < urls.length; j++) {
         await page.goto(urls[j]);
         const elements = await page.$$("li.categories-list__item");
@@ -116,7 +115,7 @@ const scrape = async (url, page, products) => {
         }
       }
     }
- 
+
     console.log(`All urls to scrape ${urlsSecondary.length}`);
     for (const url of urlsSecondary) {
       console.log(url);
@@ -134,47 +133,45 @@ const scrape = async (url, page, products) => {
         },
         {
           country: "Bulgaria",
-          city:"Sofia",
+          city: "Sofia",
           isPhysical: false,
         },
         {
           country: "Bulgaria",
-          city:"Pernik",
+          city: "Pernik",
           isPhysical: false,
         },
         {
           country: "Bulgaria",
-          city:"Dupnica",
+          city: "Dupnica",
           isPhysical: false,
         },
         {
           country: "Bulgaria",
-          city:"Blagoevgrad",
+          city: "Blagoevgrad",
           isPhysical: false,
         },
         {
           country: "Bulgaria",
-          city:"Bansko",
+          city: "Bansko",
           isPhysical: false,
         },
         {
           country: "Bulgaria",
-          city:"Pazardzhik",
+          city: "Pazardzhik",
           isPhysical: false,
         },
         {
           country: "Bulgaria",
-          city:"Asenovgrad",
+          city: "Asenovgrad",
           isPhysical: false,
-        }
+        },
       ],
     });
-  }
-  catch(err) {
-      parentPort.postMessage({ error: err });
-  }
-  finally {
-      await browser.close();
-      process.exit(0);
+  } catch (err) {
+    parentPort.postMessage({ error: err });
+  } finally {
+    await browser.close();
+    process.exit(0);
   }
 })();

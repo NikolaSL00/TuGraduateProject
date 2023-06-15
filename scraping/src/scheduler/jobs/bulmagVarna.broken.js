@@ -14,7 +14,7 @@ const { parentPort } = require("worker_threads");
     await page.goto("https://bulmag.org/category/all");
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
-    console.log('Bulmag page loaded');
+    console.log("Bulmag page loaded");
 
     const buttonOpenMenu = await page.$("button.btn-none.dropdown-toggle");
     await buttonOpenMenu.click();
@@ -30,21 +30,21 @@ const { parentPort } = require("worker_threads");
         await location.click();
       }
     }
-    console.log('Varna selected');
+    console.log("Varna selected");
 
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    let lastHeight = await page.evaluate('document.body.scrollHeight'); 
+    let lastHeight = await page.evaluate("document.body.scrollHeight");
     while (true) {
-            await page.evaluate('window.scrollTo(0, document.body.scrollHeight)');
-            await new Promise((resolve) => setTimeout(resolve, 3500));
-    
-            let newHeight = await page.evaluate('document.body.scrollHeight');
-            if (newHeight === lastHeight) {
-                break;
-            }
-            lastHeight = newHeight;
-            console.log(`scrolled to ${lastHeight} page height`);
+      await page.evaluate("window.scrollTo(0, document.body.scrollHeight)");
+      await new Promise((resolve) => setTimeout(resolve, 3500));
+
+      let newHeight = await page.evaluate("document.body.scrollHeight");
+      if (newHeight === lastHeight) {
+        break;
+      }
+      lastHeight = newHeight;
+      console.log(`scrolled to ${lastHeight} page height`);
     }
 
     const elements = await page.$$(

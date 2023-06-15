@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SearchBar, Card, Button, Text, Image } from "react-native-elements";
@@ -10,6 +10,8 @@ import api from "./../api/baseUrl.js";
 
 const SearchScreen = () => {
   const navigation = useNavigation();
+  // const route = useRoute();
+  // const { productTags } = route.params;
 
   const [search, setSearch] = useState("");
   const [productsToShow, setProductsToShow] = useState([]);
@@ -59,6 +61,12 @@ const SearchScreen = () => {
       getUserLocation();
     }, [])
   );
+
+  // useEffect(() => {
+  //   if(productTags[0]){
+  //     setSearch(() => productTags[0]);
+  //   }
+  // }, [productTags]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
