@@ -3,12 +3,11 @@ import { Store } from "../models/store";
 import { BadRequestError } from "@shopsmart/common";
 const router = express.Router();
 
-
 router.post("/api/main/searchProduct", async (req, res) => {
   const { searchTerm, userLocationCity } = req.body;
 
   if (!searchTerm || !userLocationCity) {
-    throw new BadRequestError('Невалидни данни');
+    throw new BadRequestError("Невалидни данни");
   }
   const searchTerms = searchTerm
     .split(" ")
@@ -19,65 +18,66 @@ router.post("/api/main/searchProduct", async (req, res) => {
   const filteredProductsByCityAndName = await Store.aggregate([
     {
       $lookup: {
-        from: 'locations',
-        localField: 'locations',
-        foreignField: '_id',
-        as: 'populatedLocations'
-      }
+        from: "locations",
+        localField: "locations",
+        foreignField: "_id",
+        as: "populatedLocations",
+      },
     },
     {
       $match: {
-        'populatedLocations.city': userLocationCity
-      }
+        "populatedLocations.city": userLocationCity,
+      },
     },
     {
       $lookup: {
-        from: 'products',
-        localField: 'products',
-        foreignField: '_id',
-        as: 'matchedProducts'
-      }
+        from: "products",
+        localField: "products",
+        foreignField: "_id",
+        as: "matchedProducts",
+      },
     },
     {
-      $unwind: '$matchedProducts'
+      $unwind: "$matchedProducts",
     },
     {
       $match: {
-        'matchedProducts.title': {
-          $regex: regex
-        }
-      }
+        "matchedProducts.title": {
+          $regex: regex,
+        },
+      },
     },
     {
       $lookup: {
-        from: 'stores',
-        localField: 'matchedProducts.store',
-        foreignField: '_id',
-        as: 'populatedStore'
-      }
+        from: "stores",
+        localField: "matchedProducts.store",
+        foreignField: "_id",
+        as: "populatedStore",
+      },
     },
     {
-      $unwind: '$populatedStore'
+      $unwind: "$populatedStore",
     },
     {
       $replaceRoot: {
         newRoot: {
-          $mergeObjects: ['$matchedProducts', { store: '$populatedStore' }]
-        }
-      }
+          $mergeObjects: ["$matchedProducts", { store: "$populatedStore" }],
+        },
+      },
     },
     {
       $sort: {
-        price: 1
-      }
-    }
+        price: 1,
+      },
+    },
   ]);
-  
+
   const onlyProducts = filteredProductsByCityAndName.map((product) => {
     return {
       store: {
         name: product.store.name,
-        locations: product.store.locations
+        // isPhysical: product.store.isPhysical,
+        locations: product.store.locations,
       },
       title: product.title,
       description: product.description,

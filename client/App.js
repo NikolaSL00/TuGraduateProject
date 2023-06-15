@@ -62,6 +62,11 @@ const ProductRecognizerScreenStack = () => (
     <Stack.Screen name="TakeImageScreen" component={TakeImageScreen} />
   </Stack.Navigator>
 );
+const StatisticsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen name="StatisticsScreen" component={StatisticsScreen} />
+  </Stack.Navigator>
+);
 
 const TabNavigator = () => (
   <Tab.Navigator
@@ -90,6 +95,17 @@ const TabNavigator = () => (
             size={size}
             color={color}
           />
+        ),
+        headerShown: false,
+      }}
+    />
+
+    <Tab.Screen
+      name="Статистики"
+      component={StatisticsStack}
+      options={{
+        tabBarIcon: ({ color, size }) => (
+          <Ionicons name="stats-chart-outline" size={size} color={color} />
         ),
         headerShown: false,
       }}

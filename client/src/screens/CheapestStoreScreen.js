@@ -124,23 +124,25 @@ const CheapestStoreScreen = ({ navigation }) => {
     <ScrollView>
       <Card>
         <View style={styles.storeContainer}>
-          <Button
-            icon={
-              <AntDesign
-                name="arrowleft"
-                size={18}
-                color="black"
-                style={{ color: "#737373" }}
-              />
-            }
-            buttonStyle={{
-              backgroundColor: "white",
-              width: 40,
-              height: 30,
-              marginTop: 3,
-            }}
-            onPress={() => getPreviousStore()}
-          />
+          {storesVariants.length > 1 ? (
+            <Button
+              icon={
+                <AntDesign
+                  name="arrowleft"
+                  size={18}
+                  color="black"
+                  style={{ color: "#737373" }}
+                />
+              }
+              buttonStyle={{
+                backgroundColor: "white",
+                width: 40,
+                height: 30,
+                marginTop: 3,
+              }}
+              onPress={() => getPreviousStore()}
+            />
+          ) : null}
           {currentIndex == 0 ? (
             <Ionicons
               name="pricetag-outline"
@@ -154,23 +156,25 @@ const CheapestStoreScreen = ({ navigation }) => {
           <Text style={styles.storeName}>
             {storesVariants[currentIndex].store.name}
           </Text>
-          <Button
-            icon={
-              <AntDesign
-                name="arrowright"
-                size={18}
-                color="black"
-                style={{ color: "#737373" }}
-              />
-            }
-            buttonStyle={{
-              backgroundColor: "white",
-              width: 40,
-              height: 30,
-              marginTop: 3,
-            }}
-            onPress={() => getNextStore()}
-          />
+          {storesVariants.length > 1 ? (
+            <Button
+              icon={
+                <AntDesign
+                  name="arrowright"
+                  size={18}
+                  color="black"
+                  style={{ color: "#737373" }}
+                />
+              }
+              buttonStyle={{
+                backgroundColor: "white",
+                width: 40,
+                height: 30,
+                marginTop: 3,
+              }}
+              onPress={() => getNextStore()}
+            />
+          ) : null}
         </View>
         <Text style={styles.infoText}>
           Продукти от списъка:{" "}

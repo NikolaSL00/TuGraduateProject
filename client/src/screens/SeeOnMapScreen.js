@@ -1,20 +1,59 @@
-import React, { useState } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
 import MapView, { Marker } from "react-native-maps";
+import api from "../api/baseUrl";
 
 const SeeOnMapScreen = () => {
   const route = useRoute();
-  let { coordinates } = route.params;
-  coordinates = [].concat(...coordinates);
+  let { locations } = route.params;
+  // console.log(locations);
+  // coordinates = [].concat(...coordinates);
+  const [isLoading, setIsLoading] = useState(true);
+  const [coordinates, setCoordinates] = useState([
+    { latitude: 0, longitude: 0 },
+  ]);
   const [currentCoordinates, setCurrentCoordinates] = useState(null);
   const [closestCoordinates, setClosestCoordinates] = useState(null);
+
+  const getLocations = async () => {
+    try {
+      const response = await api.post("/api/main/getLocations", {
+        locationsIds: locations,
+      });
+      // console.log(response.data);
+
+      let locationsCoordinatesArrays = response.data.map(
+        (location) => location.coordinates
+      );
+
+      const coordinatesArray = [].concat(
+        ...locationsCoordinatesArrays.map((nestedArray) =>
+          nestedArray.map(({ latitude, longitude }) => ({
+            latitude,
+            longitude,
+          }))
+        )
+      );
+
+      setCoordinates(coordinatesArray);
+
+      // setCoordinates(locationsCoordinates);
+      // console.log(locationsCoordinates);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getLocations();
+  }, [locations]);
+
   useFocusEffect(
     React.useCallback(() => {
-      console.log("coordinates", coordinates);
       const getCurrentLocation = async () => {
         try {
           const { status } = await Location.requestForegroundPermissionsAsync();
@@ -22,10 +61,8 @@ const SeeOnMapScreen = () => {
             console.log("Permission to access location was denied.");
             return;
           }
-          console.log("current");
 
           const location = await Location.getCurrentPositionAsync({});
-          console.log("current2");
 
           const { latitude, longitude } = location.coords;
 
@@ -52,13 +89,14 @@ const SeeOnMapScreen = () => {
           const closest = array[distances.indexOf(Math.min(...distances))];
           setClosestCoordinates(closest);
           console.log("closest", closestCoordinates);
+          setIsLoading(false);
         };
         findClosestObject(currentCoordinates, coordinates);
       }
     }, [currentCoordinates, coordinates])
   );
 
-  return (
+  const content = (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.container}>
         <MapView
@@ -102,6 +140,12 @@ const SeeOnMapScreen = () => {
       </View>
     </ScrollView>
   );
+
+  return isLoading ? (
+    <ActivityIndicator size="large" style={styles.activityIndicator} />
+  ) : (
+    content
+  );
 };
 
 SeeOnMapScreen.navigationOptions = {
@@ -115,6 +159,11 @@ const styles = StyleSheet.create({
   map: {
     width: "100%",
     height: "100%",
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
