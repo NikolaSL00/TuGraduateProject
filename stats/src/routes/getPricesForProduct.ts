@@ -6,7 +6,7 @@ import { Product } from "../models/product";
 const router = express.Router();
 
 router.post("/api/stats/getPricesForProducts", async (req, res) => {
-  const { storeName, productId, searchDate } = req.body;
+  const { storeName, productUrl, searchDate } = req.body;
   console.log(storeName);
   const stores = await Store.aggregate([
     {
@@ -83,9 +83,19 @@ router.post("/api/stats/getPricesForProducts", async (req, res) => {
   //     storeName: obj.storeName,
   //     products: obj.scrapings[0].products,
   //   }));
-  const products = filteredScrapingsByDate.scrapings.map((scraping:any)=>scraping.products.);
+  const products = filteredScrapingsByDate.scrapings.flatMap((scraping: any) =>
+    scraping.products
+      .filter((product: any) => product.productUrl === productUrl)
+      .map((product: any) => product.price)
+  );
 
-  res.status(200).send(filteredScrapingsByDate);
+  const dates = filteredScrapingsByDate.scrapings.flatMap((scraping: any) => {
+    const date = new Date(scraping.date).toISOString().split("T")[0];
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}`;
+  });
+
+  res.status(200).send({ products, dates });
 });
 
 export { router as getPricesForProductsRouter };
