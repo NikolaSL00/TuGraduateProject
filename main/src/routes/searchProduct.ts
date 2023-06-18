@@ -1,6 +1,5 @@
 import express from "express";
-import { Store } from "../models/store";
-import { Product, ProductDoc } from "../models/product";
+import { Product } from "../models/product";
 import { BadRequestError } from "@shopsmart/common";
 const router = express.Router();
 
@@ -33,7 +32,7 @@ router.post("/api/main/searchProduct", async (req, res) => {
     return locations.some((location) => location.city === userLocationCity);
   });
 
-  let confidenceScoreCriteria = filterProductByCity[0]._doc.confidenceScore;
+  let confidenceScoreCriteria = filterProductByCity[0]?._doc.confidenceScore;
 
   //@ts-ignore
   const filterProductByConfidenceScore = filterProductByCity.filter(
