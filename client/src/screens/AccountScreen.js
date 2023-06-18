@@ -10,7 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from "../api/baseUrl";
 
 const AccountScreen = () => {
-  const { signout } = useContext(AuthContext);
+  const { signout, changeUserLocation } = useContext(AuthContext);
   const navigation = useNavigation();
   const [userEmail, setUserEmail] = useState("");
   const [userLocation, setUserLocation] = useState("Изберете локация");
@@ -30,6 +30,8 @@ const AccountScreen = () => {
       await AsyncStorage.setItem("userLocationCity", userLocation);
       setNewChangedLocation(true);
       console.log(newChangedLocation);
+      changeUserLocation(userLocation);
+      console.log(userLocation);
 
       ToastAndroid.show("Успешно променена локация!", ToastAndroid.LONG);
 
@@ -77,9 +79,8 @@ const AccountScreen = () => {
 
   useEffect(() => {
     getCities();
-  }, [])
+  }, []);
 
- 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Card style={styles.card}>

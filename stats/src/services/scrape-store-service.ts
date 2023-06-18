@@ -61,6 +61,7 @@ export const processData = async (
   );
   await scraping.save();
 
+  await scraping.save();
   store.scrapings.push(scraping);
   await store.save();
   return store;

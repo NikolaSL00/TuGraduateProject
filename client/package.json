@@ -34,8 +34,7 @@
     "react-native-select-dropdown": "^3.3.3",
     "react-native-svg": "13.4.0",
     "react-native-svg-transformer": "^1.0.0",
-    "react-native-web": "~0.18.10",
-    "@react-native-community/datetimepicker": "6.7.3"
+    "react-native-web": "~0.18.10"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

@@ -10,8 +10,12 @@ const scrape = async (url, page, products, skippedProducts) => {
     const elements = await page.$$("div._product-inner");
 
     for (const element of elements) {
-      const imageAnchor = await element.$("a._product-image-thumb");
-      const imageUrl = await imageAnchor.evaluate((a) => a.href);
+      const imageImg = await element.$(
+        "span._product-image-thumb-holder > img.lazyload-image"
+      );
+      const imageUrl = await imageImg.evaluate((img) =>
+        img.getAttribute("data-first-src")
+      );
 
       const title = await element.$("h3._product-name-tag > a");
       const productUrl = await title.evaluate((a) => a.href);
@@ -103,6 +107,7 @@ const scrape = async (url, page, products, skippedProducts) => {
 
     let skippedProducts = 0;
     for (let url of urlsToScrape) {
+      console.log(url);
       skippedProducts = await scrape(
         `${url}?per_page=96`,
         page,

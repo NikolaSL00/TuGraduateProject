@@ -1,5 +1,6 @@
 import express from "express";
 import { Store } from "../models/store";
+import { Product, ProductDoc } from "../models/product";
 import { BadRequestError } from "@shopsmart/common";
 const router = express.Router();
 
@@ -72,21 +73,22 @@ router.post("/api/main/searchProduct", async (req, res) => {
     },
   ]);
 
-  const onlyProducts = filteredProductsByCityAndName.map((product) => {
-    return {
-      store: {
-        name: product.store.name,
-        // isPhysical: product.store.isPhysical,
-        locations: product.store.locations,
-      },
-      title: product.title,
-      description: product.description,
-      imageUrl: product.imageUrl,
-      price: product.price,
-      unit: product.unit,
-      productUrl: product.productUrl,
-    };
-  });
+  const onlyProducts = filteredProductsByCityAndName.map(
+    (product: ProductDoc) => {
+      return {
+        store: {
+          name: product.store.name,
+          locations: product.store.locations,
+        },
+        title: product.title,
+        description: product.description,
+        imageUrl: product.imageUrl,
+        price: product.price,
+        unit: product.unit,
+        productUrl: product.productUrl,
+      };
+    }
+  );
 
   res.status(200).send(onlyProducts);
 });

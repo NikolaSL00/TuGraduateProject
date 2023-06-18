@@ -1,36 +1,36 @@
-import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
-import jwt from 'jsonwebtoken';
+import express, { Request, Response } from "express";
+import { body } from "express-validator";
+import jwt from "jsonwebtoken";
 
-import { User } from '../models/user';
-import { BadRequestError, validateRequest } from '@shopsmart/common';
+import { User } from "../models/user";
+import { BadRequestError, validateRequest } from "@shopsmart/common";
 
 const router = express.Router();
 
 router.post(
-  '/api/users/signup',
+  "/api/users/signup",
   [
-    body('email').isEmail().withMessage('Имейлът трябва да е валиден'),
-    body('password')
+    body("email").isEmail().withMessage("Имейлът трябва да е валиден"),
+    body("password")
       .trim()
       .isLength({ min: 4, max: 20 })
-      .withMessage('Паролата трябва да е между 4 и 20 символа'),
-    body('userLocation')
+      .withMessage("Паролата трябва да е между 4 и 20 символа"),
+    body("userLocation")
       .not()
-      .equals('Изберете локация')
-      .withMessage('Няма избрана локация'),
+      .equals("Изберете локация")
+      .withMessage("Няма избрана локация"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { email, password,userLocation } = req.body;
+    const { email, password, userLocation } = req.body;
 
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      throw new BadRequestError('Вече съществува потребител с такъв имейл');
+      throw new BadRequestError("Вече съществува потребител с такъв имейл");
     }
 
-    const user = User.build({ email, password,locationCity:userLocation });
+    const user = User.build({ email, password, locationCity: userLocation });
 
     await user.save();
 
@@ -48,7 +48,11 @@ router.post(
       jwt: userJwt,
     };
 
-    res.status(200).send({ token: userJwt, userEmail: user.email, userLocationCity: user.locationCity });
+    res.status(200).send({
+      token: userJwt,
+      userEmail: user.email,
+      userLocationCity: user.locationCity,
+    });
   }
 );
 

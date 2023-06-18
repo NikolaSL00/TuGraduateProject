@@ -1,72 +1,67 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { View, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { useNavigation, useFocusEffect, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { SearchBar, Card, Button, Text, Image } from "react-native-elements";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import formatPrices from "../utils/formatPrices.js";
 import api from "./../api/baseUrl.js";
+import { Context as AuthContext } from "../context/AuthContext.js";
 
 const SearchScreen = () => {
+  const {
+    state: { userLocation },
+  } = useContext(AuthContext);
   const navigation = useNavigation();
-  // const route = useRoute();
-  // const { productTags } = route.params;
+  const route = useRoute();
 
   const [search, setSearch] = useState("");
   const [productsToShow, setProductsToShow] = useState([]);
-  const [userLocation, setUserLocation] = useState("");
   const [noResultFlag, setNoResultFlag] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
 
-  const searchTerm = async () => {
-    if (search) {
-      setProductsToShow([]);
-      setIsSearching(true);
-      try {
-        const response = await api.post("/api/main/searchProduct", {
-          searchTerm: search,
-          userLocationCity: userLocation,
-        });
-        if (response.data.length == 0) {
-          setNoResultFlag(true);
-        } else {
-          setNoResultFlag(false);
-        }
+  const searchTerm = async (searchBarcodeTerm) => {
+    setIsSearching(() => true);
+    let searchTermFinal;
+    let urlToFetch = "";
+    if (typeof searchBarcodeTerm === "string") {
+      searchTermFinal = searchBarcodeTerm;
+      urlToFetch = "/api/main/searchProductByBarcode";
+    } else {
+      searchTermFinal = search;
+      urlToFetch = "/api/main/searchProduct";
+    }
 
-        setProductsToShow(formatPrices(response.data));
-      } catch (err) {
-        console.log(err);
+    try {
+      const response = await api.post(urlToFetch, {
+        searchTerm: searchTermFinal,
+        userLocationCity: userLocation,
+      });
+      if (response.data.length == 0) {
+        setNoResultFlag(true);
+      } else {
+        setNoResultFlag(false);
       }
+
+      setProductsToShow(formatPrices(response.data));
+    } catch (err) {
+      console.log(err);
     }
     setIsSearching(false);
   };
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const getUserLocation = async () => {
-        try {
-          const userLocationCityFromStorage = await AsyncStorage.getItem(
-            "userLocationCity"
-          );
+  useEffect(() => {
+    if (route.params?.productTags) {
+      let productTags = route.params.productTags;
+      let searchTermFound = `${productTags[0]}`;
+      if (productTags.length > 1) {
+        searchTermFound += `${productTags[1]}`;
+      }
 
-          if (userLocationCityFromStorage) {
-            setUserLocation(userLocationCityFromStorage);
-          }
-        } catch (error) {
-          console.log("Грешка", error);
-        }
-      };
-
-      getUserLocation();
-    }, [])
-  );
-
-  // useEffect(() => {
-  //   if(productTags[0]){
-  //     setSearch(() => productTags[0]);
-  //   }
-  // }, [productTags]);
+      setSearch(() => searchTermFound);
+      searchTerm(searchTermFound);
+    }
+  }, [route]);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -75,7 +70,7 @@ const SearchScreen = () => {
         onChangeText={(searchText) => setSearch(searchText)}
         value={search}
         onEndEditing={searchTerm}
-        autoCapitalize='none'
+        autoCapitalize="none"
       />
       {isSearching ? (
         <ActivityIndicator size="large" style={styles.activityIndicator} />

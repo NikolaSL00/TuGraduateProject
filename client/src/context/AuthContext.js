@@ -12,11 +12,17 @@ const authReducer = (state, action) => {
     case "add_error":
       return { ...state, errorMessage: toStringArray(action.payload) };
     case "signin":
-      return { errorMessage: [], token: action.payload };
+      return {
+        errorMessage: [],
+        token: action.payload.token,
+        userLocation: action.payload.userLocation,
+      };
     case "signout":
       return { token: null, errorMessage: [] };
     case "clear_error_message":
       return { ...state, errorMessage: [] };
+    case "change_location":
+      return { ...state, userLocation: action.payload.userLocation };
     default:
       return state;
   }
@@ -24,8 +30,10 @@ const authReducer = (state, action) => {
 
 const tryLocalSignin = (dispatch) => async () => {
   const token = await AsyncStorage.getItem("token");
+  const userLocation = await AsyncStorage.getItem("userLocationCity");
+
   if (token) {
-    dispatch({ type: "signin", payload: token });
+    dispatch({ type: "signin", payload: { token, userLocation } });
     navigate("MainFlow", { screen: "Search" }); //   navigate("MainFlow",{SearchScreen});
   } else {
     navigate("Signup");
@@ -36,17 +44,25 @@ const clearErrorMessage = (dispatch) => () => {
   dispatch({ type: "clear_error_message" });
 };
 
+const changeUserLocation = (dispatch) => (userLocation) => {
+  dispatch({
+    type: "change_location",
+    payload: {
+      userLocation,
+    },
+  });
+};
+
 const signup =
   (dispatch) =>
   async ({ email, password, userLocation, callback }) => {
     try {
-      console.log("AUTH CONTEXT");
       const response = await api.post("api/users/signup", {
         email,
         password,
         userLocation,
       });
-      console.log("response", response.data);
+
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userEmail", response.data.userEmail);
       await AsyncStorage.setItem(
@@ -54,7 +70,13 @@ const signup =
         response.data.userLocationCity
       );
 
-      dispatch({ type: "signin", payload: response.data.token });
+      dispatch({
+        type: "signin",
+        payload: {
+          token: response.data.token,
+          userLocation: userLocation,
+        },
+      });
       navigate("MainFlow", { screen: "Search" });
     } catch (err) {
       dispatch({
@@ -70,7 +92,6 @@ const signin =
   (dispatch) =>
   async ({ email, password, callback }) => {
     try {
-      console.log("SIGNIN");
       const response = await api.post("api/users/signin", { email, password });
       await AsyncStorage.setItem("token", response.data.token);
       await AsyncStorage.setItem("userEmail", response.data.userEmail);
@@ -79,7 +100,13 @@ const signin =
         response.data.userLocationCity
       );
 
-      dispatch({ type: "signin", payload: response.data.token });
+      dispatch({
+        type: "signin",
+        payload: {
+          token: response.data.token,
+          userLocation: response.data.userLocationCity,
+        },
+      });
       navigate("MainFlow", { screen: "Search" });
     } catch (err) {
       dispatch({
@@ -102,6 +129,13 @@ const signout = (dispatch) => async () => {
 
 export const { Provider, Context } = createDataContext(
   authReducer,
-  { signin, signout, signup, clearErrorMessage, tryLocalSignin },
-  { token: null, errorMessage: [] }
+  {
+    signin,
+    signout,
+    signup,
+    clearErrorMessage,
+    tryLocalSignin,
+    changeUserLocation,
+  },
+  { userLocation: "", token: null, errorMessage: [] }
 );

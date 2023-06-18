@@ -1,5 +1,6 @@
-import mongoose from 'mongoose';
-import { StoreDoc } from './store';
+import mongoose from "mongoose";
+import mongoose_fuzzy_searching from "@imranbarbhuiya/mongoose-fuzzy-searching";
+import { StoreDoc } from "./store";
 
 interface ProductAttrs {
   store: StoreDoc;
@@ -28,7 +29,7 @@ interface ProductModel extends mongoose.Model<ProductDoc> {
 const productSchema = new mongoose.Schema({
   store: {
     type: mongoose.Types.ObjectId,
-    ref: 'Store',
+    ref: "Store",
     required: true,
   },
   title: {
@@ -51,7 +52,7 @@ const productSchema = new mongoose.Schema({
   unit: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   productUrl: {
     type: String,
@@ -63,8 +64,12 @@ productSchema.statics.build = (attrs: ProductAttrs) => {
   return new Product(attrs);
 };
 
+productSchema.plugin(mongoose_fuzzy_searching, {
+  fields: ["title"],
+});
+
 const Product = mongoose.model<ProductDoc, ProductModel>(
-  'Product',
+  "Product",
   productSchema
 );
 
