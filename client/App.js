@@ -29,6 +29,7 @@ const SearchProductStack = () => (
     <Stack.Screen name="SearchScreen" component={SearchScreen} />
     <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen} />
     <Stack.Screen name="SeeOnMapScreen" component={SeeOnMapScreen} />
+    <Stack.Screen name="StatisticsScreen" component={StatisticsScreen} />
   </Stack.Navigator>
 );
 

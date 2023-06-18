@@ -24,6 +24,8 @@ const openURL = async (url) => {
 const ProductDetailScreen = ({ navigation }) => {
   const route = useRoute();
   const { product } = route.params;
+  console.log("product", product.id);
+  console.log("store", product.store.name);
 
   return (
     <View style={styles.container}>
@@ -114,6 +116,17 @@ const ProductDetailScreen = ({ navigation }) => {
           onPress={() => {
             navigation.navigate("SeeOnMapScreen", {
               locations: product.store.locations,
+            });
+          }}
+        />
+        <View style={styles.divider} />
+        <Button
+          title="Виж статистики"
+          buttonStyle={{ backgroundColor: "#80aaff" }}
+          onPress={() => {
+            navigation.navigate("StatisticsScreen", {
+              productUrl: product.productUrl,
+              storeName: product.store.name,
             });
           }}
         />

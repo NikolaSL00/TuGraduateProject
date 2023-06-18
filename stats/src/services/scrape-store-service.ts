@@ -1,20 +1,20 @@
-import { ScrapingStoreCompletedEvent } from '@shopsmart/common';
-import { Store } from '../models/store';
-import { Product } from '../models/product';
-import { Location } from '../models/location';
-import { Scraping } from '../models/scraping';
+import { ScrapingStoreCompletedEvent } from "@shopsmart/common";
+import { Store } from "../models/store";
+import { Product } from "../models/product";
+import { Location } from "../models/location";
+import { Scraping } from "../models/scraping";
 
 export const processData = async (
-  data: ScrapingStoreCompletedEvent['data']
+  data: ScrapingStoreCompletedEvent["data"]
 ) => {
   const { name, locations, products } = data;
 
   let store: any = await Store.findOne({ name })
-    .populate('scrapings')
-    .populate('locations');
+    .populate("scrapings")
+    .populate("locations");
 
   if (!store) {
-    console.log('creating brand new store');
+    console.log("creating brand new store");
     store = Store.build({
       name,
       locations: [],
@@ -22,10 +22,10 @@ export const processData = async (
     });
     await store.save();
   } else {
-    console.log('updating store');
-    
-    for(let location of store.locations) {
-      await Location.deleteOne({_id: location._id});
+    console.log("updating store");
+
+    for (let location of store.locations) {
+      await Location.deleteOne({ _id: location._id });
     }
     store.locations = [];
 
@@ -45,9 +45,11 @@ export const processData = async (
     products: [],
   });
 
+  await scraping.save();
+
   await Promise.all(
     products.map(async (productData) => {
-      productData.price = productData.price.replace(',', '.');
+      productData.price = productData.price.replace(",", ".");
       const product = Product.build({
         ...productData,
         price: parseFloat(productData.price),
@@ -57,6 +59,7 @@ export const processData = async (
       scraping.products.push(product);
     })
   );
+  await scraping.save();
 
   store.scrapings.push(scraping);
   await store.save();

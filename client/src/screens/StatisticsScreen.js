@@ -1,51 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView, Text, Dimensions } from "react-native";
-
-import { useRoute } from "@react-navigation/native";
-import { LineChart } from "react-native-chart-kit";
+import { Button } from "react-native-elements";
+import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { LineChart, BarChart, StackedBarChart } from "react-native-chart-kit";
 import { ChartData } from "react-native-chart-kit/dist/HelperTypes";
-
-const data = [{ value: 50 }, { value: 80 }, { value: 90 }, { value: 70 }];
+import DateTimePicker from "@react-native-community/datetimepicker";
+import api from "../api/baseUrl";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const StatisticsScreen = () => {
   const route = useRoute();
+  const { productUrl } = route.params;
+  const { storeName } = route.params;
+
+  console.log(productUrl);
+  console.log(storeName);
+  const [isPickerShow, setIsPickerShow] = useState(false);
+  const [date, setDate] = useState(new Date(Date.now()));
+
+  const showPicker = () => {
+    setIsPickerShow(true);
+  };
+
   return (
     <ScrollView>
-      <LineChart
-        data={{
-          labels: ["January", "February", "March", "April"],
-          datasets: [
-            {
-              data: [
-                Math.random() * 100,
-                Math.random() * 100,
-                Math.random() * 100,
-                Math.random() * 100,
-                Math.random() * 100,
-                Math.random() * 100,
-              ],
-            },
-          ],
-        }}
-        width={Dimensions.get("window").width - 16}
-        height={220}
-        yAxisLabel={"Rs"}
-        chartConfig={{
-          backgroundColor: "#1cc910",
-          backgroundGradientFrom: "#eff3ff",
-          backgroundGradientTo: "#efefef",
-          decimalPlaces: 2, // optional, defaults to 2dp
-          color: (opacity = 255) => `rgba(0, 0, 0, ${opacity})`,
-          style: {
-            borderRadius: 16,
-          },
-        }}
-        bezier
-        style={{
-          marginVertical: 8,
-          borderRadius: 16,
-        }}
-      />
+      {/* Display the selected date */}
+      <View style={styles.pickedDateContainer}>
+        <Text style={styles.pickedDate}>{date.toUTCString()}</Text>
+      </View>
+      <View style={styles.btnContainer}>
+        <Button title="Show Picker" color="purple" onPress={showPicker} />
+      </View>
+
+      {isPickerShow && (
+        <DateTimePicker
+          value={date}
+          mode={"date"}
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          is24Hour={true}
+          onChange={onChange}
+          style={styles.datePicker}
+        />
+      )}
     </ScrollView>
   );
 };
