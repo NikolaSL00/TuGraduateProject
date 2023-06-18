@@ -1,4 +1,5 @@
 import React from "react";
+import { View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -26,14 +27,26 @@ const Tab = createBottomTabNavigator();
 
 const SearchProductStack = () => (
   <Stack.Navigator>
-    <Stack.Screen name="SearchScreen" component={SearchScreen} />
+    <Stack.Screen
+      options={() => ({
+        headerLeft: () => {
+          return <View />;
+        },
+      })}
+      name="SearchScreen"
+      component={SearchScreen}
+    />
     <Stack.Screen name="ProductDetailScreen" component={ProductDetailScreen} />
     <Stack.Screen name="SeeOnMapScreen" component={SeeOnMapScreen} />
   </Stack.Navigator>
 );
 
 const AccountStack = () => (
-  <Stack.Navigator>
+  <Stack.Navigator
+    screenOptions={{
+      headerLeft: null,
+    }}
+  >
     <Stack.Screen name="AccountScreen" component={AccountScreen} />
     <Stack.Screen
       name="ChangePasswordScreen"
@@ -43,14 +56,22 @@ const AccountStack = () => (
 );
 
 const ShoppingListStack = () => (
-  <Stack.Navigator>
+  <Stack.Navigator
+    screenOptions={{
+      headerLeft: null,
+    }}
+  >
     <Stack.Screen name="ShoppingListScreen" component={ShoppingListScreen} />
     <Stack.Screen name="CheapestStoreScreen" component={CheapestStoreScreen} />
   </Stack.Navigator>
 );
 
 const ProductRecognizerScreenStack = () => (
-  <Stack.Navigator>
+  <Stack.Navigator
+    screenOptions={{
+      headerLeft: null,
+    }}
+  >
     <Stack.Screen
       name="ProductRecognizerMiddleScreen"
       component={ProductRecognizerMiddleScreen}
@@ -68,11 +89,15 @@ const TabNavigator = () => (
     screenOptions={{
       tabBarActiveTintColor: "#52525C",
       style: { backgroundColor: "transparent" },
+      unmountOnBlur: true,
     }}
   >
     <Tab.Screen
       name="Търси"
       component={SearchProductStack}
+      listeners={({ navigation }) => ({
+        blur: () => navigation.setParams({ screen: undefined }),
+      })}
       options={{
         tabBarIcon: ({ color, size }) => (
           <Ionicons name="search" size={size} color={color} />

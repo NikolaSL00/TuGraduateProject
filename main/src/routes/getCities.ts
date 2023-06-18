@@ -1,6 +1,4 @@
 import express from "express";
-import { Store } from "../models/store";
-import { BadRequestError } from "@shopsmart/common";
 import { Location } from "../models/location";
 const router = express.Router();
 

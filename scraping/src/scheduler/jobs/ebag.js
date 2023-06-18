@@ -45,6 +45,9 @@ const scrape = async (url, page, products) => {
     let descriptionValue = " ";
     if (description) {
       descriptionValue = await description.evaluate((el) => el.textContent);
+      if (descriptionValue === "") {
+        descriptionValue = " ";
+      }
     }
 
     const images = await element.$$eval("img", (imgs) => {

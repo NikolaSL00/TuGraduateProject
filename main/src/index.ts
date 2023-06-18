@@ -1,40 +1,40 @@
-import { app } from './app';
-import mongoose from 'mongoose';
-import { natsWrapper } from './nats-wrapper';
-import { ScrapingStoreCompletedListener } from './events/listeners/scraping-store-completed-listener';
+import { app } from "./app";
+import mongoose from "mongoose";
+import { natsWrapper } from "./nats-wrapper";
+import { ScrapingStoreCompletedListener } from "./events/listeners/scraping-store-completed-listener";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
-    throw new Error('JWT_KEY must be defined');
+    throw new Error("JWT_KEY must be defined");
   }
   if (!process.env.MONGO_URI) {
-    throw new Error('MONGO_URI must be defined');
+    throw new Error("MONGO_URI must be defined");
   }
   if (!process.env.NATS_CLIENT_ID) {
-    throw new Error('NATS_CLIENT_ID must be defined');
+    throw new Error("NATS_CLIENT_ID must be defined");
   }
   if (!process.env.NATS_URL) {
-    throw new Error('NATS_URL must be defined');
+    throw new Error("NATS_URL must be defined");
   }
   if (!process.env.NATS_CLUSTER_ID) {
-    throw new Error('NATS_CLUSTER_ID must be defined');
+    throw new Error("NATS_CLUSTER_ID must be defined");
   }
 
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('Connected to MongoDb');
+    console.log("Connected to MongoDb");
 
     await natsWrapper.connect(
       process.env.NATS_CLUSTER_ID,
       process.env.NATS_CLIENT_ID,
       process.env.NATS_URL
     );
-    natsWrapper.client.on('close', () => {
-      console.log('NATS connection closed!');
+    natsWrapper.client.on("close", () => {
+      console.log("NATS connection closed!");
       process.exit();
     });
-    process.on('SIGINT', () => natsWrapper.client.close());
-    process.on('SIGTERM', () => natsWrapper.client.close());
+    process.on("SIGINT", () => natsWrapper.client.close());
+    process.on("SIGTERM", () => natsWrapper.client.close());
 
     new ScrapingStoreCompletedListener(natsWrapper.client).listen();
   } catch (err) {
@@ -42,7 +42,7 @@ const start = async () => {
   }
 
   app.listen(3000, () => {
-    console.log('Listening on port 3000...');
+    console.log("Listening on port 3000...");
   });
 };
 

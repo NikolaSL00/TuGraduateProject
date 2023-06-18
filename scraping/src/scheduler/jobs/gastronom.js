@@ -39,6 +39,7 @@ const scrape = async (url, page, products) => {
       let unitValue = await unitDiv.$eval("span", (el) => el.textContent);
       unitValue = unitValue.replace(/\s+/g, "");
 
+      console.log(titleValue);
       products.push({
         title: titleValue,
         description: descriptionValue,
@@ -47,6 +48,7 @@ const scrape = async (url, page, products) => {
         unit: unitValue,
         productUrl: productUrl,
       });
+      console.log(products.length);
     }
 
     const nextPageLi = await page.$("li.next.disabled");
