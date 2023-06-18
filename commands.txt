@@ -15,6 +15,7 @@ DOCKER_HOST=unix:///home/nikola/.docker/desktop/docker.sock skaffold dev
 
 // secret
 kubectl create secret generic jwt-secret --from-literal=JWT_KEY=asdf
+kubectl create secret tls ingress-tls-secret --key key.pem --cert cert.pem
 
 // create ingress nginx controller
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.0/deploy/static/provider/cloud/deploy.yaml

@@ -28,6 +28,13 @@ spec:
                 name: main-srv
                 port:
                   number: 3000
+          - path: /api/stats/?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: stats-srv
+                port:
+                  number: 3000
 
           # - path: /?(.*)
           #   pathType: Prefix

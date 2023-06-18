@@ -45,6 +45,8 @@ export const processData = async (
     products: [],
   });
 
+  await scraping.save();
+
   await Promise.all(
     products.map(async (productData) => {
       productData.price = productData.price.replace(",", ".");
@@ -57,6 +59,7 @@ export const processData = async (
       scraping.products.push(product);
     })
   );
+  await scraping.save();
 
   await scraping.save();
   store.scrapings.push(scraping);

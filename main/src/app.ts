@@ -6,6 +6,7 @@ import { searchProductRouter } from "./routes/searchProduct";
 import { searchProductByBarcodeRouter } from "./routes/searchProductsByBarcode";
 import { searchListRouter } from "./routes/searchList";
 import { getCitiesRouter } from "./routes/getCities";
+import { getLocationsRouter } from "./routes/getLocations";
 
 const app = express();
 app.set("trust proxy", true);
@@ -14,6 +15,7 @@ app.use(searchProductRouter);
 app.use(searchListRouter);
 app.use(getCitiesRouter);
 app.use(searchProductByBarcodeRouter);
+app.use(getLocationsRouter);
 
 app.all("*", async (req, res) => {
   throw new NotFoundError();

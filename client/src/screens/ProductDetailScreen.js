@@ -24,6 +24,8 @@ const openURL = async (url) => {
 const ProductDetailScreen = ({ navigation }) => {
   const route = useRoute();
   const { product } = route.params;
+  console.log("product", product.id);
+  console.log("store", product.store.name);
 
   return (
     <View style={styles.container}>
@@ -98,15 +100,13 @@ const ProductDetailScreen = ({ navigation }) => {
           <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 3 }}>
             {product.store.name}
           </Text>
-          {product.store.isPhysical ? (
-            <FontAwesome
-              name="map-marker"
-              size={24}
-              color="rgba(0, 153, 51,0.7)"
-              marginLeft={5}
-              marginTop={3}
-            />
-          ) : null}
+          <FontAwesome
+            name="map-marker"
+            size={24}
+            color="rgba(0, 153, 51,0.7)"
+            marginLeft={5}
+            marginTop={3}
+          />
         </View>
 
         <Button
@@ -115,9 +115,18 @@ const ProductDetailScreen = ({ navigation }) => {
           buttonStyle={{ backgroundColor: "#80aaff" }}
           onPress={() => {
             navigation.navigate("SeeOnMapScreen", {
-              coordinates: product.store.locations.map(
-                (location) => location.coordinates
-              ),
+              locations: product.store.locations,
+            });
+          }}
+        />
+        <View style={styles.divider} />
+        <Button
+          title="Виж статистики"
+          buttonStyle={{ backgroundColor: "#80aaff" }}
+          onPress={() => {
+            navigation.navigate("StatisticsScreen", {
+              productUrl: product.productUrl,
+              storeName: product.store.name,
             });
           }}
         />
