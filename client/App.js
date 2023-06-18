@@ -68,12 +68,13 @@ const ShoppingListStack = () => (
 );
 
 const ProductRecognizerScreenStack = () => (
-  <Stack.Navigator
-    screenOptions={{
-      headerLeft: null,
-    }}
-  >
+  <Stack.Navigator>
     <Stack.Screen
+      options={() => ({
+        headerLeft: () => {
+          return <View />;
+        },
+      })}
       name="ProductRecognizerMiddleScreen"
       component={ProductRecognizerMiddleScreen}
     />
