@@ -6,9 +6,17 @@ import { Product } from "../models/product";
 const router = express.Router();
 
 router.post("/api/stats/getPricesForProducts", async (req, res) => {
-  const { storeName, productId, searchDate } = req.body;
+  const { storeName, productUrl, searchDate } = req.body;
   console.log(storeName);
-  const store = await Store.aggregate([
+  const stores = await Store.aggregate([
+    {
+      $lookup: {
+        from: "locations",
+        localField: "locations",
+        foreignField: "_id",
+        as: "populatedLocations",
+      },
+    },
     {
       $match: {
         name: storeName,
@@ -33,44 +41,61 @@ router.post("/api/stats/getPricesForProducts", async (req, res) => {
         as: "populatedScrapings.products",
       },
     },
+    {
+      $group: {
+        _id: "$_id",
+        name: { $first: "$name" },
+        populatedLocations: { $first: "$populatedLocations" },
+        populatedScrapings: { $push: "$populatedScrapings" },
+      },
+    },
   ]);
-  console.log(store[0].populatedScrapings.length);
-  //   const store = await Store.findOne({ name: storeName });
 
-  //   const scrapingsStoreArrays = stores.map((store) => ({
-  //     storeName: store.name,
-  //     scrapings: store.populatedScrapings,
-  //   }));
+  const scrapingsStoreArrays = stores.map((store) => ({
+    storeName: store.name,
+    scrapings: store.populatedScrapings,
+  }));
 
-  //   const givenDate = new Date(searchDate);
+  const givenDate = new Date(searchDate);
 
-  //   const filteredScrapingsByDate = scrapingsStoreArrays.map((arr) => ({
-  //     storeName: arr.storeName,
-  //     scrapings: arr.scrapings.filter((scraping: any) => {
-  //       const scrapingDate = new Date(scraping.date);
-  //       const givenDateWithoutTime = new Date(
-  //         givenDate.getFullYear(),
-  //         givenDate.getMonth(),
-  //         givenDate.getDate()
-  //       );
-  //       const scrapingDateWithoutTime = new Date(
-  //         scrapingDate.getFullYear(),
-  //         scrapingDate.getMonth(),
-  //         scrapingDate.getDate()
-  //       );
-  //       return (
-  //         scrapingDateWithoutTime.getTime() === givenDateWithoutTime.getTime() ||
-  //         scrapingDateWithoutTime.getTime() > givenDateWithoutTime.getTime()
-  //       );
-  //     }),
-  //   }));
+  const filteredScrapingsByDate = scrapingsStoreArrays.map((arr) => ({
+    storeName: arr.storeName,
+    scrapings: arr.scrapings.filter((scraping: any) => {
+      const scrapingDate = new Date(scraping.date);
+      const givenDateWithoutTime = new Date(
+        givenDate.getFullYear(),
+        givenDate.getMonth(),
+        givenDate.getDate()
+      );
+      const scrapingDateWithoutTime = new Date(
+        scrapingDate.getFullYear(),
+        scrapingDate.getMonth(),
+        scrapingDate.getDate()
+      );
+      return (
+        scrapingDateWithoutTime.getTime() === givenDateWithoutTime.getTime() ||
+        scrapingDateWithoutTime.getTime() > givenDateWithoutTime.getTime()
+      );
+    }),
+  }))[0];
 
   //   const scrapingProducts = filteredScrapingsByDate.map((obj) => ({
   //     storeName: obj.storeName,
   //     products: obj.scrapings[0].products,
   //   }));
+  const products = filteredScrapingsByDate.scrapings.flatMap((scraping: any) =>
+    scraping.products
+      .filter((product: any) => product.productUrl === productUrl)
+      .map((product: any) => product.price)
+  );
 
-  res.status(200).send(store);
+  const dates = filteredScrapingsByDate.scrapings.flatMap((scraping: any) => {
+    const date = new Date(scraping.date).toISOString().split("T")[0];
+    const [year, month, day] = date.split("-");
+    return `${day}-${month}`;
+  });
+
+  res.status(200).send({ products, dates });
 });
 
 export { router as getPricesForProductsRouter };
