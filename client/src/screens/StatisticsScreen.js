@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, ScrollView, Dimensions, View } from "react-native";
+import {
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { useRoute } from "@react-navigation/native";
 import { LineChart } from "react-native-chart-kit";
 import { Button, ButtonGroup, Text } from "react-native-elements";
@@ -15,6 +21,7 @@ const StatisticsScreen = () => {
   const [labels, setLabels] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchDate, setSearchDate] = useState();
+  const [isLoading, setIsLoading] = useState(true);
 
   // const searchDate = "2023-06-10T10:07:20.225Z";
   const prepareSearchDate = (value) => {
@@ -33,6 +40,7 @@ const StatisticsScreen = () => {
       const datetime = new Date();
       datetime.setDate(datetime.getDate() - 182);
       setSearchDate(datetime.toISOString());
+      console.log(datetime);
     }
     if (value == 3) {
       const datetime = new Date();
@@ -48,10 +56,17 @@ const StatisticsScreen = () => {
         productUrl,
         searchDate,
       });
-      setData(response.data.products);
-      setLabels(response.data.dates);
+      console.log(response.data);
+      if (response.data.prices && response.data.prices.length > 0) {
+        setData(response.data.prices);
+      }
+      if (response.data.dates && response.data.dates.length > 0) {
+        setLabels(response.data.dates);
+      }
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,7 +76,7 @@ const StatisticsScreen = () => {
     setSearchDate(datetime.toISOString());
   }, []);
   useEffect(() => {
-    console.log("get date");
+    setIsLoading(true);
     getProductPrices();
   }, [route, searchDate]);
 
@@ -83,38 +98,66 @@ const StatisticsScreen = () => {
           containerStyle={{ marginBottom: 20, borderRadius: 10 }}
         />
       </View>
-      {data.length > 0 && labels.length > 0 ? (
-        <LineChart
-          data={{
-            labels: labels,
-            datasets: [
-              {
-                data: data,
-                strokeWidth: 2,
-              },
-            ],
-          }}
-          yAxisSuffix={" лв"}
-          width={Dimensions.get("window").width - 20}
-          height={300}
-          chartConfig={{
-            backgroundColor: "#e6eeff",
-            backgroundGradientFrom: "#e6eeff",
-            backgroundGradientTo: "#e6eeff",
-            decimalPlaces: 2,
+      {data.length > 0 && labels.length > 0 && isLoading == false ? (
+        <View style={{ backgroundColor: "#e6eeff", marginTop: 30 }}>
+          <Text
+            style={{
+              alignSelf: "flex-start",
+              marginLeft: 20,
+              marginBottom: 10,
+              marginTop: 5,
 
-            color: (opacity = 1) => `rgba(26, 98, 255, ${opacity})`,
-            style: {
+              fontWeight: "bold",
+              color: "#858593",
+            }}
+          >
+            Цена
+          </Text>
+          <LineChart
+            data={{
+              labels: labels,
+              datasets: [
+                {
+                  data: data,
+                  strokeWidth: 2,
+                },
+              ],
+            }}
+            yAxisSuffix={" лв"}
+            width={Dimensions.get("window").width - 20}
+            height={300}
+            chartConfig={{
+              backgroundColor: "#e6eeff",
+              backgroundGradientFrom: "#e6eeff",
+              backgroundGradientTo: "#e6eeff",
+              decimalPlaces: 2,
+              color: (opacity = 1) => `rgba(26, 98, 255, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+            }}
+            style={{
+              marginLeft: 10,
+              marginTop: 10,
+              marginVertical: 8,
               borderRadius: 16,
-            },
-          }}
-          style={{
-            marginLeft: 10,
-            marginTop: 30,
-            marginVertical: 8,
-            borderRadius: 16,
-          }}
-        />
+            }}
+          />
+          <Text
+            style={{
+              alignSelf: "center",
+              fontWeight: "bold",
+              color: "#858593",
+              marginTop: -23,
+              marginBottom: 5,
+            }}
+          >
+            Дата
+          </Text>
+        </View>
+      ) : null}
+      {isLoading === true ? (
+        <ActivityIndicator style={{ marginTop: 200 }} />
       ) : null}
     </ScrollView>
   );
