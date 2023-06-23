@@ -10,7 +10,7 @@
       [
         "expo-barcode-scanner",
         {
-          "cameraPermission": "Allow ShopSmart to access camera."
+          "cameraPermission": "Позволете на ShopSmart да използва вашата камера."
         }
       ]
     ],
@@ -19,10 +19,8 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -35,7 +33,5 @@
     "web": {
       "favicon": "./assets/favicon.png"
     }
-   
-
   }
 }
