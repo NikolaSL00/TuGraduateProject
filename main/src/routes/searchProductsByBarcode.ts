@@ -26,27 +26,26 @@ router.post("/api/main/searchProductByBarcode", async (req, res) => {
     })
     .select("-title_fuzzy");
 
-  //@ts-ignore
-  const filterProductByCity = products.filter((product) => {
+  const filterProductByCity = products.filter((product: ProductDoc) => {
     const locations = product.store.locations;
-    //@ts-ignore
     return locations.some((location) => location.city === userLocationCity);
   });
 
-  let confidenceScoreCriteria = filterProductByCity[0]._doc.confidenceScore;
+  let confidenceScoreCriteria = filterProductByCity[0]?._doc.confidenceScore;
 
-  //@ts-ignore
   const filterProductByConfidenceScore = filterProductByCity.filter(
-    //@ts-ignore
-    (product) => product._doc.confidenceScore >= confidenceScoreCriteria * 0.85
+    (product: ProductDoc) =>
+      //@ts-ignore
+      product._doc.confidenceScore >= confidenceScoreCriteria * 0.85
   );
 
-  //@ts-ignore
-  filterProductByConfidenceScore.sort((a, b) => {
+  filterProductByConfidenceScore.sort((a: ProductDoc, b: ProductDoc) => {
+    //@ts-ignore
     if (a._doc.confidenceScore === b._doc.confidenceScore) {
       return a.price - b.price;
     } else {
       // Sort by confidenceScore
+      //@ts-ignore
       return b._doc.confidenceScore - a._doc.confidenceScore;
     }
   });
