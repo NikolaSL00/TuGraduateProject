@@ -10,14 +10,6 @@ router.post("/api/stats/getPricesForProducts", async (req, res) => {
   console.log(storeName);
   const stores = await Store.aggregate([
     {
-      $lookup: {
-        from: "locations",
-        localField: "locations",
-        foreignField: "_id",
-        as: "populatedLocations",
-      },
-    },
-    {
       $match: {
         name: storeName,
       },
@@ -33,19 +25,11 @@ router.post("/api/stats/getPricesForProducts", async (req, res) => {
     {
       $unwind: "$populatedScrapings",
     },
-    {
-      $lookup: {
-        from: "products",
-        localField: "populatedScrapings.products",
-        foreignField: "_id",
-        as: "populatedScrapings.products",
-      },
-    },
+
     {
       $group: {
         _id: "$_id",
         name: { $first: "$name" },
-        populatedLocations: { $first: "$populatedLocations" },
         populatedScrapings: { $push: "$populatedScrapings" },
       },
     },
@@ -58,7 +42,7 @@ router.post("/api/stats/getPricesForProducts", async (req, res) => {
 
   const givenDate = new Date(searchDate);
 
-  const filteredScrapingsByDate = scrapingsStoreArrays.map((arr) => ({
+  const filteredScrapingsByDate: any = scrapingsStoreArrays.map((arr) => ({
     storeName: arr.storeName,
     scrapings: arr.scrapings.filter((scraping: any) => {
       const scrapingDate = new Date(scraping.date);
@@ -79,23 +63,106 @@ router.post("/api/stats/getPricesForProducts", async (req, res) => {
     }),
   }))[0];
 
-  //   const scrapingProducts = filteredScrapingsByDate.map((obj) => ({
-  //     storeName: obj.storeName,
-  //     products: obj.scrapings[0].products,
-  //   }));
-  const products = filteredScrapingsByDate.scrapings.flatMap((scraping: any) =>
+  // const scrapingProducts = filteredScrapingsByDate.map((obj: any) => ({
+  //   storeName: obj.storeName,
+  //   products: obj.scrapings[0].products,
+  // }));
+  const scrapingProducts = await Promise.all(
+    filteredScrapingsByDate.scrapings.map(async (scraping: any) => {
+      const { date, products } = scraping;
+
+      const populatedProducts = await Promise.all(
+        products.map(async (productId: any) => {
+          const product = await Product.findById(productId).exec();
+          return product;
+        })
+      );
+
+      return {
+        date,
+        products: populatedProducts,
+      };
+    })
+  );
+
+  let prices = scrapingProducts.flatMap((scraping: any) =>
     scraping.products
       .filter((product: any) => product.productUrl === productUrl)
       .map((product: any) => product.price)
   );
 
-  const dates = filteredScrapingsByDate.scrapings.flatMap((scraping: any) => {
+  let dates = filteredScrapingsByDate.scrapings.flatMap((scraping: any) => {
     const date = new Date(scraping.date).toISOString().split("T")[0];
     const [year, month, day] = date.split("-");
-    return `${day}-${month}`;
+    return `${month}-${day}`;
+  });
+  dates = dates.sort((a: any, b: any) => {
+    const monthA = parseInt(a.split("-")[0]);
+    const monthB = parseInt(b.split("-")[0]);
+
+    if (monthA === monthB) {
+      return 0;
+    } else if (monthA < monthB) {
+      return -1;
+    } else {
+      return 1;
+    }
   });
 
-  res.status(200).send({ products, dates });
+  let datetime = new Date();
+  datetime.setDate(new Date().getDate() - 7);
+  if (
+    datetime.getDate() == givenDate.getDate() &&
+    datetime.getMonth() == givenDate.getMonth()
+  ) {
+    console.log("week");
+    dates = dates.filter((_: any, index: any) => index % 2 !== 0);
+    prices = prices.filter((_: any, index: any) => index % 2 !== 0);
+  }
+  datetime = new Date();
+  datetime.setDate(new Date().getDate() - 31);
+
+  if (
+    datetime.getDate() == givenDate.getDate() &&
+    datetime.getMonth() == givenDate.getMonth()
+  ) {
+    console.log("month");
+    dates = dates.filter((_: any, index: any) => index % 8 !== 7);
+    prices = prices.filter((_: any, index: any) => index % 8 !== 7);
+    console.log(dates);
+  }
+  datetime = new Date();
+  datetime.setDate(new Date().getDate() - 182);
+  console.log("given", givenDate);
+  console.log("datetime", datetime);
+  let datetimeForYear = new Date();
+  datetimeForYear.setDate(new Date().getDate() - 365);
+
+  if (
+    (datetime.getDate() == givenDate.getDate() &&
+      datetime.getMonth() == givenDate.getMonth()) ||
+    (datetimeForYear.getDate() == givenDate.getDate() &&
+      datetimeForYear.getMonth() == givenDate.getMonth())
+  ) {
+    console.log("6 months 1year");
+
+    const uniqueMonths = Array.from(
+      new Set(dates.map((date: any) => date.split("-")[0]))
+    );
+    console.log(uniqueMonths);
+
+    prices = uniqueMonths.map((month) => {
+      const pricesOfMonth = prices.filter((_, index) =>
+        dates[index].startsWith(month)
+      );
+      const averagePrice = (
+        pricesOfMonth.reduce((a, b) => a + b, 0) / pricesOfMonth.length
+      ).toFixed(2);
+      return averagePrice;
+    });
+    dates = uniqueMonths;
+  }
+  res.status(200).send({ prices, dates });
 });
 
 export { router as getPricesForProductsRouter };
