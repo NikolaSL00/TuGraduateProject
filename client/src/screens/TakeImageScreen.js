@@ -6,17 +6,19 @@ import {
   TouchableOpacity,
   Alert,
   ImageBackground,
-  Image,
 } from "react-native";
 import { Camera } from "expo-camera";
-import api from "../api/baseUrl";
-// import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 import * as FileSystem from "expo-file-system";
+import { manipulateAsync } from "expo-image-manipulator";
+import api from "../api/baseUrl";
 let camera;
 
 const TakeImageScreen = () => {
   const [previewVisible, setPreviewVisible] = useState(false);
   const [capturedImage, setCapturedImage] = useState(null);
+
+  const navigation = useNavigation();
 
   const startCamera = async () => {
     const { status } = await Camera.requestCameraPermissionsAsync();
@@ -36,7 +38,7 @@ const TakeImageScreen = () => {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    console.log(photo);
+    // console.log(photo);
     setPreviewVisible(true);
     //setStartCamera(false)
     // setCapturedImage(photo);
@@ -44,24 +46,41 @@ const TakeImageScreen = () => {
   };
 
   const savePhoto = async () => {
-    const formdata = new FormData();
+    let url = "https://12bb-78-83-255-207.ngrok-free.app/api/ai/recognize";
 
-    formdata.append("image", capturedImage.base64);
+    const formData = new FormData();
+    const manipulatorOptions = { format: "jpeg", compress: 0.8, base64: true }; // Customize the options as needed
+    const resizedImage = await manipulateAsync(
+      capturedImage.uri,
+      [{ resize: { width: 299, height: 299 } }], // Specify the desired width and height for resizing
+      manipulatorOptions
+    );
+
+    formData.append("blob", JSON.stringify(resizedImage.base64));
 
     try {
-      const response = await api.post("/api/ai/recognize", formdata, {
+      const response = await fetch(url, {
         method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formdata),
+        body: formData,
       });
-    } catch (err) {
-      console.log(err.request);
-      console.log(err.response);
-      console.log(err.message);
-      console.log(err.config);
+
+      if (response.ok) {
+        // Successful response
+        const { prediction } = await response.json();
+
+        navigation.navigate("Търси", {
+          screen: "SearchScreen",
+          params: { productTags: [prediction] },
+        });
+        // Process the responseData as needed
+      } else {
+        // Error response
+        // Handle the error
+        console.log("Error:", response.status);
+      }
+    } catch (error) {
+      // Fetch error
+      console.log("Fetch error:", error);
     }
   };
 
@@ -157,7 +176,7 @@ const styles = StyleSheet.create({
 });
 
 const CameraPreview = ({ photo, retakePicture, savePhoto }) => {
-  console.log("sdsfds", photo);
+  // console.log("sdsfds", photo);
   return (
     <View
       style={{
@@ -200,10 +219,10 @@ const CameraPreview = ({ photo, retakePicture, savePhoto }) => {
               <Text
                 style={{
                   color: "#fff",
-                  fontSize: 20,
+                  fontSize: 16,
                 }}
               >
-                Re-take
+                Снимай пак
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -219,10 +238,10 @@ const CameraPreview = ({ photo, retakePicture, savePhoto }) => {
               <Text
                 style={{
                   color: "#fff",
-                  fontSize: 20,
+                  fontSize: 16,
                 }}
               >
-                save photo
+                Търси
               </Text>
             </TouchableOpacity>
           </View>
