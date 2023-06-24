@@ -1,15 +1,12 @@
 const express = require("express");
 const tf = require("@tensorflow/tfjs-node");
-const multer = require("multer");
 const path = require("path");
 const { BadRequestError, requireAuth } = require("@shopsmart/common");
 const router = express.Router();
 const fs = require("fs");
 
-const upload = multer({ dest: "uploads/" });
-
 //, requireAuth ,
-router.post("/recognize", upload.single("image"), async (req, res) => {
+router.post("/recognize", async (req, res) => {
   try {
     console.log("hi");
     const modelPath = path.resolve(__dirname, "../model/model.json");
@@ -19,11 +16,13 @@ router.post("/recognize", upload.single("image"), async (req, res) => {
     const labelsPath = path.resolve(__dirname, "../model/labels.json");
     const labels = JSON.parse(fs.readFileSync(labelsPath, "utf8"));
 
-    // Access the uploaded image file
-    const imagePath = req.file.path;
+    const { image } = req.body;
+    console.log(image);
+
+    // Convert the base64 image to a buffer
+    const imageBuffer = Buffer.from(image, "base64");
 
     // Load the image using TensorFlow.js
-    const imageBuffer = fs.readFileSync(imagePath);
     const imageTensor = tf.node.decodeImage(imageBuffer);
 
     // Resize the image to match the target size

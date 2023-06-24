@@ -9,8 +9,9 @@ import {
   Image,
 } from "react-native";
 import { Camera } from "expo-camera";
-// import api from "../api/baseUrl";
-import axios from "axios";
+import api from "../api/baseUrl";
+// import axios from "axios";
+import * as FileSystem from "expo-file-system";
 let camera;
 
 const TakeImageScreen = () => {
@@ -31,45 +32,36 @@ const TakeImageScreen = () => {
 
   const takePicture = async () => {
     const photo = await camera.takePictureAsync();
+    const base64Image = await FileSystem.readAsStringAsync(photo.uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
     console.log(photo);
     setPreviewVisible(true);
     //setStartCamera(false)
-    setCapturedImage(photo);
+    // setCapturedImage(photo);
+    setCapturedImage({ ...photo, base64: base64Image });
   };
 
   const savePhoto = async () => {
-    if (capturedImage) {
-      const formData = new FormData();
+    const formdata = new FormData();
 
-      formData.append("image", {
-        uri: capturedImage.uri,
-        name: "photo.jpg",
-        type: "image/jpeg",
+    formdata.append("image", capturedImage.base64);
+
+    try {
+      const response = await api.post("/api/ai/recognize", formdata, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formdata),
       });
-
-      try {
-        const response = await fetch(
-          "https://25e3-78-83-255-207.ngrok-free.app/api/ai/recognize",
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        if (response.status === 200) {
-          // Image processed successfully
-          console.log("Image processed successfully");
-        } else {
-          // Handle error response
-          console.log("Failed to process image");
-        }
-      } catch (error) {
-        // Handle network or other errors
-        console.error("Error processing image", error);
-      }
+    } catch (err) {
+      console.log(err.request);
+      console.log(err.response);
+      console.log(err.message);
+      console.log(err.config);
     }
   };
 
