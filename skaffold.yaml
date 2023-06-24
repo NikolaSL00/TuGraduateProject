@@ -40,3 +40,11 @@ build:
         manual:
           - src: "src/**/*.js"
             dest: .
+    - image: botbotov/ai
+      context: ai
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.js"
+            dest: .
