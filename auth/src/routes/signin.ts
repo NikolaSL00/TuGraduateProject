@@ -1,21 +1,18 @@
-import express, { Request, Response } from 'express';
-import { body } from 'express-validator';
-import jwt from 'jsonwebtoken';
+import express, { Request, Response } from "express";
+import { body } from "express-validator";
+import jwt from "jsonwebtoken";
 
-import { Password } from '../services/password';
-import { User } from '../models/user';
-import { validateRequest, BadRequestError } from '@shopsmart/common';
+import { Password } from "../services/password";
+import { User } from "../models/user";
+import { validateRequest, BadRequestError } from "@shopsmart/common";
 
 const router = express.Router();
 
 router.post(
-  '/api/users/signin',
+  "/api/users/signin",
   [
-    body('email').isEmail().withMessage('Имейлът трябва да е валиден'),
-    body('password')
-      .trim()
-      .notEmpty()
-      .withMessage('Трябва да въведете парола'),
+    body("email").isEmail().withMessage("Имейлът трябва да е валиден"),
+    body("password").trim().notEmpty().withMessage("Трябва да въведете парола"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
@@ -23,7 +20,7 @@ router.post(
 
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
-      throw new BadRequestError('Невалиден имейл или парола');
+      throw new BadRequestError("Невалиден имейл или парола");
     }
 
     const passwordsMatch = await Password.compare(
@@ -31,7 +28,7 @@ router.post(
       password
     );
     if (!passwordsMatch) {
-      throw new BadRequestError('Невалиден имейл или парола');
+      throw new BadRequestError("Невалиден имейл или парола");
     }
 
     // Generate JWT
@@ -43,13 +40,17 @@ router.post(
       process.env.JWT_KEY!
     );
 
-    // Store it on session object
-    req.session = {
-      jwt: userJwt,
-    };
+    // // Store it on session object
+    // req.session = {
+    //   jwt: userJwt,
+    // };
 
     const reqSess = req.session;
-    res.status(200).send({ token: userJwt, userEmail: existingUser.email, userLocationCity: existingUser.locationCity });
+    res.status(200).send({
+      token: userJwt,
+      userEmail: existingUser.email,
+      userLocationCity: existingUser.locationCity,
+    });
   }
 );
 
