@@ -46,7 +46,8 @@ const TakeImageScreen = () => {
   };
 
   const savePhoto = async () => {
-    let url = "https://12bb-78-83-255-207.ngrok-free.app/api/ai/recognize";
+    let baseUrl = "https://0f65-151-251-251-8.ngrok-free.app";
+    let url = `${baseUrl}/api/ai/recognize`;
 
     const formData = new FormData();
     const manipulatorOptions = { format: "jpeg", compress: 0.8, base64: true }; // Customize the options as needed
