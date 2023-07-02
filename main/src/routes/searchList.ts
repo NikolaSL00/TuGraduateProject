@@ -1,6 +1,7 @@
 import express from "express";
 import { Store } from "../models/store";
 import { BadRequestError, requireAuth, currentUser } from "@shopsmart/common";
+import { ProductDoc } from "../models/product";
 const router = express.Router();
 
 router.post(
@@ -47,7 +48,48 @@ router.post(
         products: matchArray,
       });
     }
-    res.status(200).send(storeProducts);
+
+    let lowestPricesForStores: {
+      store: any;
+      lowestPriceProducts: ProductDoc[];
+    }[] = [];
+    for (const store of storeProducts) {
+      let lowest = {
+        store: store.store,
+        lowestPriceProducts: [] as ProductDoc[],
+      };
+      for (const productsArray of store.products) {
+        // magazina ima produkti v masivi, koito matchvat opredelen regex
+        const sortedProductsArray = productsArray.sort(
+          (a, b) => a.price - b.price
+        );
+        const lowestPriceObject = sortedProductsArray[0]; // ot tqh se izbira nai-evtiniq
+        lowest.lowestPriceProducts.push(lowestPriceObject);
+      }
+      lowestPricesForStores.push(lowest); // masiv s nai-evitinite produkti za edin magazin
+    }
+
+    let storesWithSumPrice = [];
+    for (const store of lowestPricesForStores) {
+      //sumirat se cenite na produktite za vseki magazin i se izbira nai-evtinata
+      const sum = store.lowestPriceProducts
+        .reduce((total, obj: any) => total + obj.price, 0)
+        .toFixed(2);
+      storesWithSumPrice.push({
+        store: store.store,
+        sum: sum,
+        products: store.lowestPriceProducts,
+      });
+    }
+
+    storesWithSumPrice.sort((a: any, b: any) => {
+      if (a.products.length !== b.products.length) {
+        return a.products.length - b.products.length;
+      }
+      return a.sum - b.sum;
+    });
+
+    res.status(200).send(storesWithSumPrice);
   }
 );
 

@@ -41,7 +41,7 @@ export const processData = async (
   );
 
   const scraping = Scraping.build({
-    date: new Date("2023-06-14T10:07:20.225Z"),
+    date: new Date(),
     products: [],
   });
 
@@ -52,7 +52,7 @@ export const processData = async (
       productData.price = productData.price.replace(",", ".");
       const product = Product.build({
         ...productData,
-        price: parseFloat(productData.price) - 0.05,
+        price: parseFloat(productData.price),
         store,
       });
       await product.save();

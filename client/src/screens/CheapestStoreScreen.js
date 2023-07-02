@@ -35,37 +35,7 @@ const CheapestStoreScreen = ({ navigation }) => {
         listData,
       });
 
-      const stores = response.data;
-      let lowestPricesForStores = [];
-      for (const store of stores) {
-        let lowest = { store: store.store, lowestPriceProducts: [] };
-        for (const productsArray of store.products) {
-          //magazina ima produkti v masivi, koito matchvat opredlen regex,
-          productsArray.sort((a, b) => a.price - b.price);
-          const lowestPriceObject = productsArray[0]; //ot tqh se izbira nai-evtiniq
-          lowest.lowestPriceProducts.push(lowestPriceObject);
-        }
-        lowestPricesForStores.push(lowest); //masiv s nai-evitinite produkti za edin magaizn
-      }
-      let storesWithSumPrice = [];
-      for (const store of lowestPricesForStores) {
-        //sumirat se cenite na produktite za vseki magazin i se izbira nai-evtinata
-        const sum = store.lowestPriceProducts
-          .reduce((total, obj) => total + obj.price, 0)
-          .toFixed(2);
-        storesWithSumPrice.push({
-          store: store.store,
-          sum: sum,
-          products: store.lowestPriceProducts,
-        });
-      }
-
-      storesWithSumPrice.sort((a, b) => {
-        if (a.products.length !== b.products.length) {
-          return a.products.length - b.products.length;
-        }
-        return a.sum - b.sum;
-      });
+      const storesWithSumPrice = response.data;
 
       // const lowestPriceStore = storesWithSumPrice[0];
 
